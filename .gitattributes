@@ -1,0 +1,2 @@
+# Store text files with LF so Windows and macOS/Linux checkouts produce the same diffs
+* text=auto eol=lf
