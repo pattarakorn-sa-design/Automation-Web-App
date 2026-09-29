@@ -13,7 +13,7 @@ type SubmitButtonProps = {
 // submitting so the same data cannot be sent twice (REQ-VAL-04).
 export default function SubmitButton({
   children,
-  pendingLabel = "กำลังดำเนินการ...",
+  pendingLabel = "Saving...",
   className,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
