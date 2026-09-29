@@ -93,6 +93,9 @@ Import them instead of writing your own, so every page looks the same.
   - `SubmitButton`: a Client Component that disables itself and shows `pendingLabel` (default
     `"Saving..."`, UI text is English) while the parent `<form action>` is submitting (it uses
     `useFormStatus`, so it must be inside the form).
+  - Example: `features/auth/LoginForm.tsx` is built from all three. It wraps the form in `LoginCard`
+    (passing `state.formError` as `error`) and keeps A's `useActionState` and zod validation as they
+    were, so copy that file as the starting point for new forms.
 - These components have `dark:` classes already, so they follow the OS colour scheme.
 
 ## Testing (Vitest)
