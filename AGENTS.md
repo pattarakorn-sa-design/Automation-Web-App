@@ -16,8 +16,8 @@ commit history**, so how work is committed matters as much as the code.
 
 - Requirements, permission matrix, business rules and validation rules: `docs/REQUIREMENTS.md`.
   Read it before building a feature. Do not invent requirements; if something is unclear, ask.
-- Team notes (setup gotchas, CI and test conventions): `docs/NOTES.md`. Read it after pulling.
-  Add an entry there when you change something the other person will trip over.
+- Team notes (setup gotchas, CI and test conventions): `docs/NOTES.md`. Read it before starting
+  any task, and keep it up to date as described in "Team notes" below.
 - Stack: Next.js 16 (App Router, TypeScript), Tailwind CSS v4, Supabase (Postgres + Auth + RLS),
   GitHub Actions for CI, Vercel for hosting.
 
@@ -42,10 +42,37 @@ Do not change Server Actions, data fetching, validation schemas, migrations, RLS
 - Commit messages: short English imperative summary, e.g. `Add machine create form validation`.
 - **Commit messages, PR descriptions and code comments must not mention AI tools.**
   No `Co-Authored-By` trailers for AI assistants and no "Generated with ..." footers.
+- Every PR needs a real title and description before asking for review. The instructor reads them.
+  - Title: short English summary of what the PR adds or changes, e.g.
+    `Add machine list with search and status filter`. Never leave the auto-filled branch name
+    such as `Design/components`.
+  - Description (Thai or English) with at least these sections:
+    - `## สิ่งที่ทำ`: which plan items it covers (e.g. `เฟส 4.1–4.4`) and a bullet list of changes.
+    - `## วิธีทดสอบ`: commands to run and what to check by hand, so the reviewer can verify it.
+    - `## หลัง merge` (when relevant): what this unblocks, follow-up work, or setup the other
+      person must do.
+  - Close related issues with `Fixes #<number>` in the description.
 - The other team member reviews and merges the PR. CI must pass before merging.
 - Never force-push `main` or a branch someone else is working on.
 - Personal AI-assistant config files other than this `AGENTS.md` stay local: list them in
   `.git/info/exclude` instead of committing them.
+
+## Team notes (`docs/NOTES.md`)
+
+`docs/NOTES.md` is how the two team members, and the assistants they work with, avoid hitting
+the same problem twice. Keeping it current is part of every task, not an optional extra.
+
+- Read it before starting a task, and again after pulling someone else's changes.
+- Before finishing a task, add or update an entry when any of these happened:
+  - you hit an error, a failing check or a confusing behaviour and found the cause or fix;
+  - you added or changed a convention, a shared component, a script, a dependency or an env var;
+  - you changed the database schema, RLS policies or anything the other person's code relies on;
+  - you worked around a limitation (tooling, Next.js 16, Supabase, Vercel, CI) that will come up again.
+- Commit the NOTES.md change in the same branch and PR as the work it describes, as its own commit
+  (e.g. `Document ... in team notes`), so the reviewer sees both together.
+- Group entries under a topic heading; put new topics at the top. Keep each entry short: what
+  happens, why, and what to do. Update or delete entries that are no longer true.
+- English only. No secrets, emails or passwords. Do not mention AI tools.
 
 ## Before every commit
 
