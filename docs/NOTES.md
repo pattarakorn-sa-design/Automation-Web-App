@@ -54,6 +54,16 @@ Keep entries short, in English, and do not mention AI tools.
   A seeded alarm with status `Closed` must set `closed_at`, `cause` and `action_taken` itself.
 - A seeded `Completed` maintenance record needs `action_taken` and `end_date`.
 - `alarms.occurred_at` cannot be in the future.
+- How to run it: apply the migrations, create at least one user, then paste `supabase/seed.sql`
+  into the SQL Editor and run it. Without any user it stops with a clear message and inserts nothing.
+- It is safe to run again: if the sample machines (`CNC-001` ... `PMP-001`) already exist it does
+  nothing. To reload, delete those machines and their alarms and maintenance records first.
+- What it adds: 10 machines (Running 6, Stop 2, Alarm 1, Maintenance 1), 9 alarms (Open 3,
+  In Progress 2, Closed 4) and 8 maintenance records (Completed 4, In Progress 2, Pending 2).
+  Maintenance records are assigned in turn to the technicians that exist; if there are none it uses
+  every profile, so it also works with a single admin.
+- The counts above are what the Dashboard should show on a fresh seed (see TC-DSH-01 to 04 in
+  `docs/TEST_CHECKLIST.md`).
 
 ## Shared UI components (`components/`)
 
