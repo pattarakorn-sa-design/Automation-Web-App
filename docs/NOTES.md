@@ -26,8 +26,12 @@ Import them instead of writing your own, so every page looks the same.
   - `TextField`: label plus input. Pass `name`, `label`, optional `error` (shown under the field)
     and `hint`. Other input props (`type`, `autoComplete`, `required`, `defaultValue`) pass through.
     It is uncontrolled, so it works directly inside `<form action={serverAction}>`.
-  - `SubmitButton`: a Client Component that disables itself and shows `pendingLabel` while the parent
-    `<form action>` is submitting (it uses `useFormStatus`, so it must be inside the form).
+    The input `id` defaults to `field-<name>`. When one page has several forms with a field of the same
+    name (one row per user or machine), pass a unique `id`, e.g. `id={`name-${row.id}`}`; the error and
+    hint ids are built from it, so the label and error text point at the right input.
+  - `SubmitButton`: a Client Component that disables itself and shows `pendingLabel` (default
+    `"Saving..."`, UI text is English) while the parent `<form action>` is submitting (it uses
+    `useFormStatus`, so it must be inside the form).
 - These components have `dark:` classes already, so they follow the OS colour scheme.
 
 ## Testing (Vitest)
