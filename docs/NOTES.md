@@ -20,8 +20,9 @@ Keep entries short, in English, and do not mention AI tools.
   `created_by` on alarms and maintenance records cannot be changed after insert.
 - A technician can only create a maintenance record with `technician_id` = themselves, so the
   maintenance form must lock the Technician field to the current user for technicians.
-- Admins cannot update their own profile row at all (role or name), so there is always at least
-  one admin left.
+- Every user can update their own `full_name`, but nobody can change their own `role` (a trigger
+  rejects it), so there is always at least one admin left. Admins can change other users' names
+  and roles.
 - The alarm and maintenance triggers skip their checks when there is no signed-in user
   (SQL Editor, secret key). Server Actions that write alarms or maintenance records must use the
   user's client from `lib/supabase/server.ts`, never `SUPABASE_SECRET_KEY`, or the status rules
