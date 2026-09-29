@@ -20,6 +20,19 @@ Keep entries short, in English, and do not mention AI tools.
   from `features/auth/actions.ts`. It works in both Server and Client Components.
 - Sign-up is turned off in Supabase (Authentication > Sign In / Providers). New accounts are added
   by the owner in the Supabase dashboard and start as `technician`.
+- `/users` (admin only) edits other users' names and roles; `/profile` lets anyone edit their own
+  name. Emails come from the `admin_list_users()` database function, which returns nothing for
+  non-admins. `profiles` has no email column on purpose, so technicians cannot see emails.
+
+## Forms pattern (see `features/auth/LoginForm.tsx`, `features/users/`)
+
+- Server Action signature for `useActionState`: `(prevState, formData) => Promise<FormState>`
+  returning `fieldErrors` (from `z.flattenError(...).fieldErrors`), `formError` or `success`.
+- The Client Component form runs the same zod schema in `onSubmit` and calls `preventDefault()`
+  when it fails, so errors show instantly; the Server Action validates again.
+- Use `noValidate` on the form so the browser's English popups do not replace the Thai messages.
+- After an update, check `.select("id")` returned a row: RLS silently skips rows the user may
+  not change instead of returning an error.
 
 ## Database (`supabase/migrations/`, `types/database.ts`)
 
