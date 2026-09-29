@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 
-type TextFieldProps = Omit<ComponentPropsWithoutRef<"input">, "id"> & {
+type TextFieldProps = ComponentPropsWithoutRef<"input"> & {
   label: string;
   name: string;
   // Validation message shown under the field, telling the user how to fix it.
@@ -11,12 +11,16 @@ type TextFieldProps = Omit<ComponentPropsWithoutRef<"input">, "id"> & {
 export default function TextField({
   label,
   name,
+  id: idProp,
   error,
   hint,
   className,
   ...inputProps
 }: TextFieldProps) {
-  const id = `field-${name}`;
+  // Defaults to `field-<name>`. Pass a unique `id` when one page has several
+  // forms with a field of the same name (e.g. one row per user), because ids
+  // must be unique for the label and the error message to point at the right input.
+  const id = idProp ?? `field-${name}`;
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
   const describedBy =

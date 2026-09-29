@@ -30,6 +30,38 @@ describe("TextField", () => {
     expect(html).not.toContain("aria-describedby");
   });
 
+  it("uses a custom id for the input, label, error and hint", () => {
+    const html = renderToStaticMarkup(
+      <TextField
+        label="Name"
+        name="fullName"
+        id="name-user-1"
+        error="กรุณากรอกชื่อ"
+        hint="ไม่เกิน 100 ตัวอักษร"
+      />,
+    );
+
+    expect(html).toContain('for="name-user-1"');
+    expect(html).toContain('id="name-user-1"');
+    expect(html).toContain('id="name-user-1-error"');
+    expect(html).toContain('id="name-user-1-hint"');
+    expect(html).toContain('aria-describedby="name-user-1-error name-user-1-hint"');
+    expect(html).not.toContain("field-fullName");
+  });
+
+  it("gives every row a unique id when the field name repeats", () => {
+    const html = renderToStaticMarkup(
+      <>
+        <TextField label="Name" name="fullName" id="name-user-1" error="ผิด" />
+        <TextField label="Name" name="fullName" id="name-user-2" error="ผิด" />
+      </>,
+    );
+
+    const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+    expect(ids).toHaveLength(4);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
   it("passes input attributes through", () => {
     const html = renderToStaticMarkup(
       <TextField
