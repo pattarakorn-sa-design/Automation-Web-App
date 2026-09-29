@@ -103,6 +103,17 @@ describe("LoginCard", () => {
     expect(html).not.toContain('role="alert"');
   });
 
+  it("shows a custom description under the title", () => {
+    const html = renderToStaticMarkup(
+      <LoginCard description="Sign in with your admin account">
+        <span />
+      </LoginCard>,
+    );
+
+    expect(html).toContain("Sign in with your admin account");
+    expect(html).not.toContain("Sign in to continue");
+  });
+
   it("shows a form-level error as an alert", () => {
     const html = renderToStaticMarkup(
       <LoginCard error="Email หรือรหัสผ่านไม่ถูกต้อง">
