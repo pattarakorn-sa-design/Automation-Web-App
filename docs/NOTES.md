@@ -4,6 +4,20 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Database (`supabase/migrations/`, `types/database.ts`)
+
+- Schema changes are SQL files in `supabase/migrations/`, applied in filename order in the
+  Supabase SQL Editor. Never edit a migration that has already been applied; add a new one.
+- `types/database.ts` is generated from the live database. Do not edit it by hand. After a
+  schema change, run `npx supabase login` once, then `npm run db:types`, and commit the result.
+- Row types: `import type { Tables, Enums } from "@/types/database"`, then
+  `Tables<"machines">` or `Enums<"machine_status">`.
+- RLS is on for every table. Anonymous users can read nothing. Technicians cannot write machines,
+  cannot create alarms, and can only write maintenance records where they are the technician.
+  Alarm status changes and who may edit which alarm columns are enforced by a database trigger.
+- `seed.sql` must not insert into `auth.users` or `profiles`: profiles are created by a trigger
+  when a user is added in Authentication. Pick existing profile ids with a subquery instead.
+
 ## Shared UI components (`components/`)
 
 Import them instead of writing your own, so every page looks the same.
