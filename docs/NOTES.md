@@ -19,6 +19,15 @@ Import them instead of writing your own, so every page looks the same.
   prop and the `onConfirm` / `onCancel` callbacks. Set `destructive` for delete actions and
   `pending` while the Server Action runs; both buttons are disabled while `pending` is true.
   Esc and a click on the backdrop call `onCancel`.
+- Form pieces, for the login page and later forms. None of them touches auth or data, so wire them to
+  your own Server Action:
+  - `LoginCard`: centred card with the title. Pass `error` for a form-level message such as
+    "Email หรือรหัสผ่านไม่ถูกต้อง" (shown as an alert). Put the fields and button inside as children.
+  - `TextField`: label plus input. Pass `name`, `label`, optional `error` (shown under the field)
+    and `hint`. Other input props (`type`, `autoComplete`, `required`, `defaultValue`) pass through.
+    It is uncontrolled, so it works directly inside `<form action={serverAction}>`.
+  - `SubmitButton`: a Client Component that disables itself and shows `pendingLabel` while the parent
+    `<form action>` is submitting (it uses `useFormStatus`, so it must be inside the form).
 - These components have `dark:` classes already, so they follow the OS colour scheme.
 
 ## Testing (Vitest)
