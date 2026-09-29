@@ -4,6 +4,23 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Auth (`features/auth/`, `proxy.ts`)
+
+- `proxy.ts` refreshes the session cookie and sends signed-out users to `/login`. To make a page
+  public, add its path to `PUBLIC_PATHS` in `lib/supabase/proxy.ts`. The proxy does not check roles.
+- In Server Components and Server Actions (both run on the server):
+  - `getCurrentUser()` returns `{ id, email, fullName, role }` or `null`. It is cached per request,
+    so calling it in a layout and a page costs one query.
+  - `requireUser()` redirects to `/login` when nobody is signed in.
+  - `requireRole("admin")` also redirects other roles to `/?error=forbidden`, where the home page
+    shows "คุณไม่มีสิทธิ์เข้าหน้านั้น". Call it at the top of every admin page and admin Server Action.
+- These helpers are `server-only`. A Client Component (e.g. a navbar that needs the role) gets the
+  user as a prop from a Server Component parent instead of importing them.
+- Logout: `<form action={signOut}><button type="submit">Logout</button></form>` with `signOut`
+  from `features/auth/actions.ts`. It works in both Server and Client Components.
+- Sign-up is turned off in Supabase (Authentication > Sign In / Providers). New accounts are added
+  by the owner in the Supabase dashboard and start as `technician`.
+
 ## Database (`supabase/migrations/`, `types/database.ts`)
 
 - Schema changes are SQL files in `supabase/migrations/`, applied in filename order in the
