@@ -16,8 +16,8 @@ commit history**, so how work is committed matters as much as the code.
 
 - Requirements, permission matrix, business rules and validation rules: `docs/REQUIREMENTS.md`.
   Read it before building a feature. Do not invent requirements; if something is unclear, ask.
-- Team notes (setup gotchas, CI and test conventions): `docs/NOTES.md`. Read it after pulling.
-  Add an entry there when you change something the other person will trip over.
+- Team notes (setup gotchas, CI and test conventions): `docs/NOTES.md`. Read it before starting
+  any task, and keep it up to date as described in "Team notes" below.
 - Stack: Next.js 16 (App Router, TypeScript), Tailwind CSS v4, Supabase (Postgres + Auth + RLS),
   GitHub Actions for CI, Vercel for hosting.
 
@@ -46,6 +46,23 @@ Do not change Server Actions, data fetching, validation schemas, migrations, RLS
 - Never force-push `main` or a branch someone else is working on.
 - Personal AI-assistant config files other than this `AGENTS.md` stay local: list them in
   `.git/info/exclude` instead of committing them.
+
+## Team notes (`docs/NOTES.md`)
+
+`docs/NOTES.md` is how the two team members, and the assistants they work with, avoid hitting
+the same problem twice. Keeping it current is part of every task, not an optional extra.
+
+- Read it before starting a task, and again after pulling someone else's changes.
+- Before finishing a task, add or update an entry when any of these happened:
+  - you hit an error, a failing check or a confusing behaviour and found the cause or fix;
+  - you added or changed a convention, a shared component, a script, a dependency or an env var;
+  - you changed the database schema, RLS policies or anything the other person's code relies on;
+  - you worked around a limitation (tooling, Next.js 16, Supabase, Vercel, CI) that will come up again.
+- Commit the NOTES.md change in the same branch and PR as the work it describes, as its own commit
+  (e.g. `Document ... in team notes`), so the reviewer sees both together.
+- Group entries under a topic heading; put new topics at the top. Keep each entry short: what
+  happens, why, and what to do. Update or delete entries that are no longer true.
+- English only. No secrets, emails or passwords. Do not mention AI tools.
 
 ## Before every commit
 
