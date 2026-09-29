@@ -4,6 +4,23 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Shared UI components (`components/`)
+
+Import them instead of writing your own, so every page looks the same.
+
+- `StatusBadge`: `<StatusBadge status="Running" />`. `status` is `"Running" | "Stop" | "Alarm" | "Maintenance"`.
+  It exports the `MachineStatus` type. When `types/` gets the database types, switch the import to those.
+  It only covers machine status; alarm and maintenance statuses need their own badge.
+- `EmptyState`: default text is "ไม่พบข้อมูล". Optional `title`, `description`, `action`.
+  Use it instead of an empty table. It is safe in Server Components.
+- `ErrorState`: `role="alert"` with a Thai default message. Optional `title`, `message`, `action`
+  (put a retry link or button in `action`). Safe in Server Components.
+- `ConfirmDialog`: a Client Component built on the native `<dialog>`. You control it with the `open`
+  prop and the `onConfirm` / `onCancel` callbacks. Set `destructive` for delete actions and
+  `pending` while the Server Action runs; both buttons are disabled while `pending` is true.
+  Esc and a click on the backdrop call `onCancel`.
+- These components have `dark:` classes already, so they follow the OS colour scheme.
+
 ## Testing (Vitest)
 
 - Run tests with `npm test` (it runs `vitest run` once, no watch mode, so CI never hangs).
@@ -11,6 +28,8 @@ Keep entries short, in English, and do not mention AI tools.
 - The `@/` import alias works in tests through `resolve.tsconfigPaths`. Do not add `vite-tsconfig-paths`;
   Vitest 5 supports it natively and warns if the plugin is installed.
 - Environment is `node`. Add `jsdom` and Testing Library only when a component test needs them.
+  Components without state can be tested with `renderToStaticMarkup` from `react-dom/server`
+  (see `components/StatusBadge.test.tsx`).
 - `lib/supabase/env.ts` reads `process.env` at import time. In tests, use `vi.stubEnv(...)`, then
   `vi.resetModules()` and a dynamic `import()` (see `lib/supabase/env.test.ts`).
 
