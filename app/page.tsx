@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { signOut } from "@/features/auth/actions";
 import { requireUser } from "@/features/auth/session";
 
@@ -34,6 +35,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         Signed in as <strong>{user.fullName}</strong> ({user.email}) with role{" "}
         <strong>{user.role}</strong>.
       </p>
+
+      <nav className="flex gap-4 text-blue-600 underline dark:text-blue-400">
+        <Link href="/profile">Profile</Link>
+        {user.role === "admin" ? <Link href="/users">Users</Link> : null}
+      </nav>
     </main>
   );
 }
