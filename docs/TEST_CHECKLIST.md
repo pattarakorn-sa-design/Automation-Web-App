@@ -34,7 +34,7 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | ID | Requirement | ขั้นตอน | ผลที่คาดหวัง | A | T |
 |---|---|---|---|:-:|:-:|
 | TC-MCH-01 | REQ-MCH-01, US-02 | เพิ่ม Machine ใหม่ (เช่น `M-101`) ด้วยข้อมูลครบ | บันทึกสำเร็จและเห็นในรายการ `/machines` | [ ] | - |
-| TC-MCH-02 | REQ-MCH-03, US-02 | เพิ่ม Machine ID ที่มีอยู่แล้ว (ทดสอบทั้ง `M-101` และ `m-101`) | ไม่บันทึก และแสดงข้อความว่า Machine ID ซ้ำ (ดู Note 1) | [ ] | - |
+| TC-MCH-02 | REQ-MCH-03, US-02 | เพิ่ม Machine ID ที่มีอยู่แล้ว (ทดสอบทั้ง `M-101` และ `m-101`) | ไม่บันทึก และแสดงข้อความ "Machine ID นี้มีอยู่แล้ว" | [ ] | - |
 | TC-MCH-03 | REQ-VAL-01, US-02 | เว้นช่อง Machine Name ว่าง หรือใส่แต่ช่องว่าง แล้วกดบันทึก | แสดง Error ใต้ช่องนั้นและไม่ส่งข้อมูล | [ ] | - |
 | TC-MCH-04 | REQ-MCH-06, BR-MCH-02 | ลบ Machine ที่มี Alarm หรือ Maintenance ผูกอยู่ | ลบไม่ได้ และแจ้งเหตุผลที่อ่านเข้าใจ | [ ] | - |
 | TC-MCH-05 | REQ-MCH-07 | ลบ Machine ที่ไม่มีข้อมูลผูกอยู่ | มีกล่องยืนยันก่อนลบ กดยกเลิกแล้วไม่ถูกลบ กดยืนยันแล้วถูกลบ | [ ] | - |
@@ -140,15 +140,12 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 
 ## Notes
 
-1. **ข้อความ Error ของ Machine ID ซ้ำ**: `docs/REQUIREMENTS.md` (US-02) ระบุ "Machine ID นี้มีอยู่แล้ว"
-   ส่วนแผนงาน (งาน 4.3) ระบุ "Machine ID already exists" ให้ตกลงกับ A ว่าจะใช้ข้อความไหน
-   แล้วแก้ข้อ TC-MCH-02 ให้ตรงกัน (ตาม AGENTS.md ข้อความ Error ที่ผู้ใช้เห็นเป็นภาษาไทย)
-2. **Open Questions**: ข้อ TC-AUTH-09, TC-ALM-10 และ TC-MNT-04 ใช้ค่าเริ่มต้นของ OQ-01 และ OQ-02
+1. **Open Questions**: ข้อ TC-AUTH-09, TC-ALM-10 และ TC-MNT-04 ใช้ค่าเริ่มต้นของ OQ-01 และ OQ-02
    (Technician สร้าง Alarm ไม่ได้ และแก้ Maintenance ของคนอื่นไม่ได้) ถ้าคำตอบของ OQ เปลี่ยน ต้องแก้ข้อเหล่านี้ด้วย
-3. **TC-AUTH-08 / 09**: การเรียก Supabase Client โดยตรงต้องใช้ session ของ Technician จริง
+2. **TC-AUTH-08 / 09**: การเรียก Supabase Client โดยตรงต้องใช้ session ของ Technician จริง
    ทำได้โดยเปิด Console บนหน้าเว็บที่ Login แล้ว หรือเขียน script ชั่วคราวในเครื่อง
    ห้าม commit script หรือ token ลง repo
-4. **TC-DSH-06**: ทดสอบบน Preview URL หรือในเครื่องเท่านั้น ห้ามเปลี่ยนค่าบน Production
+3. **TC-DSH-06**: ทดสอบบน Preview URL หรือในเครื่องเท่านั้น ห้ามเปลี่ยนค่าบน Production
 
 ## บั๊กที่พบ
 
