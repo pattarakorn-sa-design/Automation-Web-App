@@ -16,6 +16,8 @@ commit history**, so how work is committed matters as much as the code.
 
 - Requirements, permission matrix, business rules and validation rules: `docs/REQUIREMENTS.md`.
   Read it before building a feature. Do not invent requirements; if something is unclear, ask.
+- Team notes (setup gotchas, CI and test conventions): `docs/NOTES.md`. Read it after pulling.
+  Add an entry there when you change something the other person will trip over.
 - Stack: Next.js 16 (App Router, TypeScript), Tailwind CSS v4, Supabase (Postgres + Auth + RLS),
   GitHub Actions for CI, Vercel for hosting.
 
