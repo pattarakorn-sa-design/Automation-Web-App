@@ -42,6 +42,16 @@ Do not change Server Actions, data fetching, validation schemas, migrations, RLS
 - Commit messages: short English imperative summary, e.g. `Add machine create form validation`.
 - **Commit messages, PR descriptions and code comments must not mention AI tools.**
   No `Co-Authored-By` trailers for AI assistants and no "Generated with ..." footers.
+- Every PR needs a real title and description before asking for review. The instructor reads them.
+  - Title: short English summary of what the PR adds or changes, e.g.
+    `Add machine list with search and status filter`. Never leave the auto-filled branch name
+    such as `Design/components`.
+  - Description (Thai or English) with at least these sections:
+    - `## สิ่งที่ทำ`: which plan items it covers (e.g. `เฟส 4.1–4.4`) and a bullet list of changes.
+    - `## วิธีทดสอบ`: commands to run and what to check by hand, so the reviewer can verify it.
+    - `## หลัง merge` (when relevant): what this unblocks, follow-up work, or setup the other
+      person must do.
+  - Close related issues with `Fixes #<number>` in the description.
 - The other team member reviews and merges the PR. CI must pass before merging.
 - Never force-push `main` or a branch someone else is working on.
 - Personal AI-assistant config files other than this `AGENTS.md` stay local: list them in
