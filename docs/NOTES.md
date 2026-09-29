@@ -102,6 +102,17 @@ Import them instead of writing your own, so every page looks the same.
   prop and the `onConfirm` / `onCancel` callbacks. Set `destructive` for delete actions and
   `pending` while the Server Action runs; both buttons are disabled while `pending` is true.
   Esc and a click on the backdrop call `onCancel`.
+- `Navbar`: the top menu, rendered once in `app/layout.tsx` only when `getCurrentUser()` returns a
+  user, so it never shows on `/login`. Do not add your own header to a page. It shows Dashboard,
+  Machines, Alarms, Maintenance, and Users for admins only, plus the user's name (link to `/profile`),
+  role and a Logout button. On screens below `md` the menu folds behind a button.
+  - To add or hide a menu item, edit `NAV_ITEMS` in `components/navigation.ts` (`roles` limits who
+    sees it). This only hides links: the page must still call `requireRole(...)`.
+  - The menu links to pages that arrive with the feature PRs (`/machines`, `/alarms`,
+    `/maintenance`), so those links show a 404 until the page exists.
+  - The temporary home page still has its own Logout button and Profile/Users links. Remove them
+    when the real Dashboard replaces that page (phase 7).
+  - Because the layout reads the session, every page (including not-found) is rendered on demand.
 - Form pieces, for the login page and later forms. None of them touches auth or data, so wire them to
   your own Server Action:
   - `LoginCard`: centred card with the title. Pass `error` for a form-level message such as

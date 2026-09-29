@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Navbar from "@/components/Navbar";
+import { signOut } from "@/features/auth/actions";
+import { getCurrentUser } from "@/features/auth/session";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,13 +23,24 @@ export const metadata: Metadata = {
   description: "Machine, alarm and maintenance management for the factory floor.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Null when nobody is signed in, so the navbar never shows on /login.
+  const user = await getCurrentUser();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {user ? (
+          <Navbar
+            user={{ fullName: user.fullName, role: user.role }}
+            signOutAction={signOut}
+          />
+        ) : null}
+        {children}
+      </body>
     </html>
   );
 }
