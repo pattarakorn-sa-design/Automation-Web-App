@@ -26,6 +26,9 @@ export default function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // True only while a press started and ended on the backdrop, so dragging from
+  // inside the box (e.g. selecting text) and releasing outside does not close it.
+  const pressedOnBackdrop = useRef(false);
   const titleId = useId();
   const descriptionId = useId();
 
@@ -52,8 +55,18 @@ export default function ConfirmDialog({
       }}
       // A click on the backdrop targets the dialog element itself, so the dialog
       // must have no padding: the wrapper div below carries it instead.
+      onMouseDown={(event) => {
+        pressedOnBackdrop.current = event.target === event.currentTarget;
+      }}
+      onMouseUp={(event) => {
+        pressedOnBackdrop.current =
+          pressedOnBackdrop.current && event.target === event.currentTarget;
+      }}
       onClick={(event) => {
-        if (event.target === event.currentTarget && !pending) onCancel();
+        const onBackdrop =
+          pressedOnBackdrop.current && event.target === event.currentTarget;
+        pressedOnBackdrop.current = false;
+        if (onBackdrop && !pending) onCancel();
       }}
       className="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg bg-white p-0 text-gray-900 shadow-xl backdrop:bg-black/50 dark:bg-gray-900 dark:text-gray-100"
     >
