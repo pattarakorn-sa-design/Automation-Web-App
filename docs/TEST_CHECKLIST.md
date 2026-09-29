@@ -56,7 +56,7 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | TC-ALM-05 | BR-ALM-03, BR-ALM-04, US-04 | กรอก Cause และ Action Taken ครบแล้วปิด Alarm | ปิดสำเร็จ บันทึก `closed_by` และ `closed_at` และ Alarm ไม่ถูกนับเป็นค้างใน Dashboard | [ ] | [ ] |
 | TC-ALM-06 | BR-ALM-02, US-04 | Technician พยายามเปลี่ยนสถานะ Alarm ที่ `Closed` แล้ว | ถูกปฏิเสธ | - | [ ] |
 | TC-ALM-07 | BR-ALM-02, BR-ALM-04 | Admin เปิด Alarm ที่ปิดแล้วกลับมา (Reopen) | ทำได้ และ `closed_by` / `closed_at` ถูกล้างค่า | [ ] | - |
-| TC-ALM-08 | BR-ALM-01 | ลองเปลี่ยนสถานะที่ไม่อยู่ในลำดับที่อนุญาต (เช่น Closed → In Progress โดย Technician) | ถูกปฏิเสธ | [ ] | [ ] |
+| TC-ALM-08 | BR-ALM-01 | Admin เปลี่ยน Alarm จาก `Closed` เป็น `In Progress` โดยตรง (ไม่ Reopen เป็น `Open` ก่อน) | ถูกปฏิเสธ สถานะยังเป็น `Closed` ต้อง Reopen เป็น `Open` ก่อน ตาม BR-ALM-01 (database บังคับด้วย trigger) | [ ] | - |
 | TC-ALM-09 | REQ-ALM-05 | Admin แก้ไข code, description, เวลา ของ Alarm | แก้ได้ | [ ] | - |
 | TC-ALM-10 | REQ-ALM-05 | Technician เปิดหน้า Alarm และดูว่ามีปุ่มหรือฟอร์มแก้ไขรายละเอียดหรือไม่ | ไม่มีให้แก้ (ถ้าเรียก Action ตรงๆ ต้องถูกปฏิเสธ) | - | [ ] |
 | TC-ALM-11 | REQ-ALM-08 | มองหาปุ่มหรือฟังก์ชันลบ Alarm | ไม่มีการลบ Alarm | [ ] | [ ] |
