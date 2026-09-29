@@ -35,7 +35,9 @@ export default function LoginForm() {
   return (
     <LoginCard
       description="Sign in with the account your admin created for you."
-      error={state.formError}
+      // Hide the old form-level error while field errors from the client
+      // check are shown, so a stale "wrong password" does not sit next to them.
+      error={clientErrors ? undefined : state.formError}
     >
       <form
         action={formAction}
