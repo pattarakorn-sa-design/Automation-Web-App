@@ -20,6 +20,12 @@ Keep entries short, in English, and do not mention AI tools.
   from `features/auth/actions.ts`. It works in both Server and Client Components.
 - Sign-up is turned off in Supabase (Authentication > Sign In / Providers). New accounts are added
   by the owner in the Supabase dashboard and start as `technician`.
+- `proxy.ts` runs on every page, so if `NEXT_PUBLIC_SUPABASE_URL` or
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is missing, every page fails, not just the ones that load
+  data. When creating a new Vercel environment or a new local clone, set both before anything else.
+- Known limitation, accepted: two admins demoting each other at the same moment could leave no
+  admin. It needs two admins acting within the same second, so it is not guarded. To recover, the
+  Supabase project owner sets `role = 'admin'` on a profile in the Supabase dashboard.
 - `/users` (admin only) edits other users' names and roles; `/profile` lets anyone edit their own
   name. Emails come from the `admin_list_users()` database function, which returns nothing for
   non-admins. `profiles` has no email column on purpose, so technicians cannot see emails.
@@ -33,6 +39,9 @@ Keep entries short, in English, and do not mention AI tools.
 - Use `noValidate` on the form so the browser's English popups do not replace the Thai messages.
 - After an update, check `.select("id")` returned a row: RLS silently skips rows the user may
   not change instead of returning an error.
+- Hide the form-level error while client-side field errors are shown, and hide the "saved"
+  message once the user edits the form again (`onChange` on the form), so old messages do not
+  stay next to new ones.
 
 ## Database (`supabase/migrations/`, `types/database.ts`)
 
