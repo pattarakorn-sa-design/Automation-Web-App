@@ -51,3 +51,65 @@
 | Testing | Vitest |
 | CI | GitHub Actions (lint, build, test) |
 | Hosting | Vercel |
+
+## วิธีติดตั้งและใช้งาน
+
+### สิ่งที่ต้องมี
+
+- Node.js 22 ขึ้นไป (CI ใช้ Node 22) และ npm
+- Supabase project (ต้องมี Project URL และ publishable key)
+
+### ขั้นตอน
+
+```bash
+git clone https://github.com/pattarakorn-sa-design/Automation-Web-App.git
+cd Automation-Web-App
+npm ci
+```
+
+1. คัดลอก `.env.example` เป็น `.env.local` แล้วใส่ค่าจริง
+
+   | ตัวแปร | ความหมาย |
+   |---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL จาก Supabase Dashboard > Project Settings > API |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (ปลอดภัยที่จะอยู่ในเบราว์เซอร์ เพราะสิทธิ์ถูกจำกัดด้วย RLS) |
+   | `SUPABASE_SECRET_KEY` | ใช้ฝั่ง Server เท่านั้น ข้าม RLS ได้ **ห้ามขึ้นต้นด้วย `NEXT_PUBLIC_` และห้าม commit** |
+
+   `.env.local` ถูกกันไว้ใน `.gitignore` อยู่แล้ว
+
+2. ตั้งค่า Database ด้วยไฟล์ใน `supabase/`
+   <!-- TODO(11.1): เพิ่มขั้นตอนรัน migration และ seed.sql หลัง feat/db-schema และ chore/seed-data ถูก merge -->
+   _(ขั้นตอนนี้จะเพิ่มเมื่อไฟล์ migration และ seed ถูก merge เข้า `main`)_
+
+3. รันเซิร์ฟเวอร์สำหรับพัฒนา
+
+   ```bash
+   npm run dev
+   ```
+
+   เปิด <http://localhost:3000>
+
+### คำสั่งที่ใช้บ่อย
+
+| คำสั่ง | ทำอะไร |
+|---|---|
+| `npm run dev` | รันเซิร์ฟเวอร์สำหรับพัฒนา |
+| `npm run lint` | ตรวจโค้ดด้วย ESLint |
+| `npx tsc --noEmit` | ตรวจ type ของ TypeScript |
+| `npm run build` | build สำหรับ production |
+| `npm test` | รัน unit test (Vitest) |
+
+รัน `npm run lint`, `npx tsc --noEmit` และ `npm run build` ให้ผ่านก่อน commit ทุกครั้ง
+GitHub Actions จะรัน install, lint, build และ test ให้อัตโนมัติเมื่อ push และเมื่อเปิด Pull Request
+
+### โครงสร้างโปรเจ็ค
+
+```
+app/                 routes, layouts, pages
+components/          UI ที่ใช้ซ้ำ (StatusBadge, EmptyState, ErrorState, ConfirmDialog, ...)
+features/<domain>/   โค้ดของแต่ละส่วนงาน: auth, machines, alarms, maintenance, dashboard
+lib/supabase/        Supabase client ฝั่ง browser และ server
+types/               TypeScript types
+supabase/            migration และ seed
+docs/                เอกสารความต้องการและโน้ตของทีม
+```
