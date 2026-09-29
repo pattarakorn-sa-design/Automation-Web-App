@@ -1,7 +1,7 @@
 # รายงานการใช้ AI
 
 รายงานนี้สรุปว่าใช้ AI ทำอะไร ในส่วนไหนของโปรเจ็ค และตรวจสอบผลอย่างไร (งาน 11.5)
-ส่วนของ Phakkathima เขียนจากงานที่ทำจริง ส่วนระบบ (Database, Auth, Server Action) ให้ Pattarakorn เติมในหัวข้อ 5
+หัวข้อ 1–4 เป็นงานของ Phakkathima ส่วนหัวข้อ 5 เป็นงานระบบของ Pattarakorn (Database, Auth, Server Action)
 
 ## 1. เครื่องมือและหลักการใช้
 
@@ -68,13 +68,46 @@
 ข้อจำกัดที่ยังคงอยู่: test ของ component ตรวจได้เฉพาะ HTML ที่เรนเดอร์ ยังไม่มีการทดสอบการโต้ตอบ (การคลิก, การกด Esc)
 เพราะยังไม่ได้เพิ่ม jsdom และ Testing Library
 
-## 5. ส่วนระบบ (Pattarakorn เติม)
+## 5. ส่วนระบบ (Pattarakorn)
 
-<!-- TODO(11.5): Pattarakorn เติม: ใช้ AI กับ Database schema, RLS, Auth, Server Action อย่างไร และตรวจผลอย่างไร -->
-_(รอ Pattarakorn เติม)_
+ใช้ Claude Code ใน VS Code เหมือนกัน หัวข้อนี้ครอบคลุมงานถึงเฟส 2 (Database) และจะเพิ่มเมื่อทำเฟส Auth, Server Action และ Dashboard
 
-หัวข้อที่ควรครอบคลุม: การออกแบบและเขียน migration, RLS policy, `proxy.ts` และ `requireRole()`, Server Action และ validation, business rule ของ Alarm และ Maintenance
-พร้อมบอกว่าตรวจอย่างไร (เช่น ทดสอบ RLS ด้วยบัญชี Technician, unit test ของกฎเปลี่ยนสถานะ Alarm) และมีจุดไหนที่ AI ผิดแล้วต้องแก้
+### 5.1 AI ช่วยทำอะไรบ้าง
+
+| งาน | ส่วนที่ AI ทำ | ส่วนที่คนทำ / ตัดสินใจ |
+|---|---|---|
+| วิเคราะห์ใบงานและวางแผน | อ่านใบงานและเอกสารบทที่ 1–3 แล้วสรุป requirement, ร่างแผนงาน 12 เฟส และแบ่งงานสองคน | กำหนดขอบเขตงานของแต่ละคน และจัดทำแผนเป็น PDF ส่งให้เพื่อน |
+| 0.3–0.5, 1.7 ตั้งค่า Supabase และ Vercel | อธิบายขั้นตอนในหน้าเว็บทีละข้อ และตรวจผลผ่าน GitHub (deployment, URL) | สร้างบัญชีและโปรเจ็ค, ใส่ key เอง, เลือกให้เพื่อนได้แค่ publishable key |
+| 1.1–1.3 โครงโปรเจ็ค | สร้าง Next.js + Tailwind, Supabase client ฝั่ง browser/server, `.env.example`, โครงโฟลเดอร์ | ตรวจ diff และสั่ง push เอง |
+| กฎทีมใน `AGENTS.md` | เขียนกฎจากสิ่งที่ตกลงกัน: ขอบเขตงาน, branch และ commit, ความปลอดภัยของ key, การอัปเดต `docs/NOTES.md`, ชื่อและ description ของ PR | กำหนดกฎทุกข้อ เช่น ห้ามระบุ AI ใน commit และต้องอัปเดตโน้ตทีมตลอด |
+| รีวิว Pull Request ของเพื่อน | อ่าน diff, รัน lint / tsc / test / build ในเครื่อง, เทียบกับกฎใน `AGENTS.md` และสรุปผล | ตัดสินใจ approve, ขอให้แก้ หรือเปิด issue ไว้แก้ทีหลัง |
+| 2.1–2.4 ตาราง Database | เขียน migration ของ `profiles`, `machines`, `alarms`, `maintenance_records` พร้อม constraint ตาม business rule | รัน SQL ใน Supabase SQL Editor ทีละไฟล์, สร้าง user และตั้ง Admin คนแรก |
+| 2.5 RLS และสิทธิ์ | เขียน RLS policy ทุกตารางตาม Permission Matrix และ trigger ที่บังคับกฎการแก้ Alarm | รันและทดสอบด้วยบัญชี Technician และ Admin |
+| 2.6 TypeScript types | สร้าง `types/database.ts` จาก Database จริงด้วย Supabase CLI และผูกกับ client | login Supabase CLI เอง |
+
+สิ่งที่ **ไม่ได้** ให้ AI ทำ: สร้างบัญชีและ key, ใส่ค่าใน `.env.local` และ Vercel, รัน SQL บน Database จริง, ตั้ง Role ของผู้ใช้
+AI ไม่เคยเห็นค่า secret key เพราะไม่ได้ส่ง key ในแชท
+
+### 5.2 ตรวจสอบผลอย่างไร
+
+| วิธีตรวจ | ทำอย่างไร |
+|---|---|
+| ทดสอบ constraint ใน SQL Editor | ใส่ข้อมูลผิดโดยตั้งใจแล้วต้องได้ error: Machine ID `m-1` ผิดรูปแบบ, ปิด Alarm โดยไม่มี Cause, อ้าง Alarm ของเครื่องอื่นใน Maintenance |
+| ทดสอบ RLS ด้วย role จริง | จำลอง session ของ Technician แล้วเพิ่ม Machine ต้องถูกปฏิเสธ (`42501`) จำลอง Admin แล้วต้องทำได้ ครอบด้วย `rollback` ไม่ให้ข้อมูลทดสอบค้าง |
+| ตรวจ trigger สร้าง profile | สร้าง user ใหม่ใน Supabase แล้วดูว่ามี profile role `technician` เกิดขึ้นอัตโนมัติ |
+| Types จาก Database จริง | ใช้ Supabase CLI สร้าง types แทนการเขียนเอง จึงตรงกับ schema จริงแน่นอน |
+| ตรวจอัตโนมัติและ CI | lint, tsc, test, build ในเครื่อง และ GitHub Actions บนทุก PR |
+| ตรวจ Deploy | เช็คผ่าน GitHub API ว่า Production deployment มาจาก `main` และเปิด URL ได้จริง |
+
+### 5.3 ปัญหาที่พบและบทเรียน
+
+| ปัญหา | เกิดอะไรขึ้น | แก้อย่างไร | บทเรียน |
+|---|---|---|---|
+| **AI เปิด PR เองโดยไม่ได้สั่ง** | หลังทำเฟส 2 เสร็จ AI push และเปิด PR #6 ทันที ขณะที่ยังต้องการเพิ่มกฎในไฟล์เดียวกัน | เพิ่ม commit เข้า PR เดิม และสั่งให้ AI ถามก่อน push หรือเปิด PR ทุกครั้ง | งานที่คนอื่นเห็น (push, PR) ให้คนเป็นคนสั่ง |
+| **บอกเมนูในเว็บผิด** | AI บอกให้หา Production Branch ในเมนู Git ของ Vercel แต่ Vercel เวอร์ชันปัจจุบันย้ายไปอยู่ที่ Environments | หาเองแล้วส่งภาพหน้าจอให้ AI ยืนยัน | คู่มือจาก AI อาจไม่ตรงกับหน้าเว็บเวอร์ชันล่าสุด ต้องดูหน้าจอจริงประกอบ |
+| **Production deploy ผิด branch** | ตอนสร้างโปรเจ็คใน Vercel ยังไม่ได้ deploy จึงเอา branch ของเพื่อนเป็น Production | AI ตรวจพบจากข้อมูล deployment ใน GitHub แล้วให้ deploy จาก `main` ใหม่ | ตรวจผลหลังตั้งค่าทุกครั้ง ไม่ใช่แค่ดูว่าขึ้น Ready |
+| **แผนงานขัดกับ requirement** | ข้อความ error ของ Machine ID ซ้ำในแผนงานที่ AI ร่างเป็นภาษาอังกฤษ แต่ requirement กำหนดภาษาไทย | เพื่อนพบตอนเขียน test checklist แล้วตัดสินใจใช้ภาษาไทย | เอกสารที่ AI ร่างต้องเทียบกับ requirement อีกรอบ |
+| **ไฟล์ตั้งค่าที่ไม่ควรเข้า repo** | `.gitignore` ที่ได้จาก create-next-app บล็อก `.env.example` ด้วย และ Supabase CLI สร้างโฟลเดอร์ cache | แก้ `.gitignore` ให้ commit `.env.example` ได้ และเพิ่ม `supabase/.temp/` | ตรวจ `git status` ก่อน commit เสมอ ว่ามีไฟล์แปลกปนมาไหม |
 
 ## 6. บันทึกเพิ่มเติมระหว่างพัฒนา
 
