@@ -67,12 +67,14 @@ export async function updateOwnName(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .update({ full_name: parsed.data.fullName })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("id");
 
   if (error) return { formError: SAVE_FAILED };
+  if (data.length === 0) return { formError: SAVE_FAILED };
 
   revalidatePath("/", "layout");
   return { success: "บันทึกชื่อแล้ว" };
