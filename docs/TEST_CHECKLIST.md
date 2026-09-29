@@ -56,7 +56,7 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | TC-ALM-05 | BR-ALM-03, BR-ALM-04, US-04 | กรอก Cause และ Action Taken ครบแล้วปิด Alarm | ปิดสำเร็จ บันทึก `closed_by` และ `closed_at` และ Alarm ไม่ถูกนับเป็นค้างใน Dashboard | [ ] | [ ] |
 | TC-ALM-06 | BR-ALM-02, US-04 | Technician พยายามเปลี่ยนสถานะ Alarm ที่ `Closed` แล้ว | ถูกปฏิเสธ | - | [ ] |
 | TC-ALM-07 | BR-ALM-02, BR-ALM-04 | Admin เปิด Alarm ที่ปิดแล้วกลับมา (Reopen) | ทำได้ และ `closed_by` / `closed_at` ถูกล้างค่า | [ ] | - |
-| TC-ALM-08 | BR-ALM-01 | ลองเปลี่ยนสถานะที่ไม่อยู่ในลำดับที่อนุญาต (เช่น Closed → In Progress โดย Technician) | ถูกปฏิเสธ | [ ] | [ ] |
+| TC-ALM-08 | BR-ALM-01 | Admin เปลี่ยน Alarm จาก `Closed` เป็น `In Progress` โดยตรง (ไม่ Reopen เป็น `Open` ก่อน) | ถูกปฏิเสธ สถานะยังเป็น `Closed` ต้อง Reopen เป็น `Open` ก่อน ตาม BR-ALM-01 (database บังคับด้วย trigger) | [ ] | - |
 | TC-ALM-09 | REQ-ALM-05 | Admin แก้ไข code, description, เวลา ของ Alarm | แก้ได้ | [ ] | - |
 | TC-ALM-10 | REQ-ALM-05 | Technician เปิดหน้า Alarm และดูว่ามีปุ่มหรือฟอร์มแก้ไขรายละเอียดหรือไม่ | ไม่มีให้แก้ (ถ้าเรียก Action ตรงๆ ต้องถูกปฏิเสธ) | - | [ ] |
 | TC-ALM-11 | REQ-ALM-08 | มองหาปุ่มหรือฟังก์ชันลบ Alarm | ไม่มีการลบ Alarm | [ ] | [ ] |
@@ -98,7 +98,7 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | TC-DSH-03 | REQ-DSH-04 | เปรียบเทียบจำนวน Maintenance ที่ยังไม่เสร็จและทั้งหมดกับหน้า Maintenance | ตรงกัน | [ ] | [ ] |
 | TC-DSH-04 | REQ-DSH-03 | ปิด Alarm หนึ่งรายการแล้วกลับมาดู Dashboard | จำนวน Alarm ค้างลดลง 1 | [ ] | [ ] |
 | TC-DSH-05 | REQ-DSH-05 | ดูรายการ Alarm ล่าสุด | แสดง 5 รายการล่าสุดเรียงตามเวลา และกดลิงก์ไปรายละเอียดได้ | [ ] | [ ] |
-| TC-DSH-06 | NFR-REL-01, US-07 | จำลอง Database ใช้ไม่ได้ (เช่น ใส่ Supabase URL ผิดใน Preview ที่ไม่ใช่ Production) แล้วเปิด Dashboard | แสดง Error State ที่อ่านเข้าใจ ไม่ใช่หน้าว่าง และไม่ขึ้นว่าสำเร็จ | [ ] | - |
+| TC-DSH-06 | NFR-REL-01, US-07 | จำลอง Database ใช้ไม่ได้ **ในเครื่องเท่านั้น** โดยใส่ `NEXT_PUBLIC_SUPABASE_URL` ผิดใน `.env.local` ชั่วคราว แล้วเปิด Dashboard (ดู Note 3) | แสดง Error State ที่อ่านเข้าใจ ไม่ใช่หน้าว่าง และไม่ขึ้นว่าสำเร็จ | [ ] | - |
 
 ## 7. UI, Responsive และ Usability
 
@@ -145,7 +145,13 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 2. **TC-AUTH-08 / 09**: การเรียก Supabase Client โดยตรงต้องใช้ session ของ Technician จริง
    ทำได้โดยเปิด Console บนหน้าเว็บที่ Login แล้ว หรือเขียน script ชั่วคราวในเครื่อง
    ห้าม commit script หรือ token ลง repo
-3. **TC-DSH-06**: ทดสอบบน Preview URL หรือในเครื่องเท่านั้น ห้ามเปลี่ยนค่าบน Production
+3. **TC-DSH-06**: ทดสอบในเครื่องเท่านั้น ห้ามทดสอบบน Preview หรือ Production
+   เพราะ env ของ Preview ใช้ร่วมกันทุก branch ถ้าแก้ `NEXT_PUBLIC_SUPABASE_URL` ของ Preview
+   Preview ของทุก PR จะพัง วิธีทำ:
+   1. Login ด้วยค่าปกติก่อน แล้วหยุด `npm run dev`
+   2. แก้ `NEXT_PUBLIC_SUPABASE_URL` ใน `.env.local` ให้ผิดชั่วคราว (ไฟล์นี้ไม่ถูก commit) แล้วรัน `npm run dev` ใหม่
+   3. เปิด Dashboard ตรวจว่าแสดง Error State
+   4. **เปลี่ยนกลับเป็นค่าเดิม** แล้วรัน `npm run dev` ใหม่ ตรวจว่าใช้งานได้ปกติ
 
 ## บั๊กที่พบ
 
