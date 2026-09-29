@@ -52,6 +52,14 @@
 | CI | GitHub Actions (lint, build, test) |
 | Hosting | Vercel |
 
+## Database Structure
+
+<!-- TODO(11.2): Pattarakorn เขียนร่างตารางและความสัมพันธ์จาก migration จริง แล้ว Phakkathima จัดหน้า -->
+_(รอสรุปโครงสร้างตารางและความสัมพันธ์จาก schema จริงหลัง migration ถูก merge)_
+
+ตารางที่ออกแบบไว้ตามความต้องการ ได้แก่ `profiles`, `machines`, `alarms` และ `maintenance_records`
+รายละเอียดฟิลด์ตามแบบร่างอยู่ในหัวข้อ 9 ของ [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
+
 ## วิธีติดตั้งและใช้งาน
 
 ### สิ่งที่ต้องมี
@@ -113,3 +121,14 @@ types/               TypeScript types
 supabase/            migration และ seed
 docs/                เอกสารความต้องการและโน้ตของทีม
 ```
+
+## Vercel URL
+
+<!-- TODO(11.1): ใส่ URL จริงหลัง deploy บน Vercel (งาน 1.7 และ 8.x) -->
+_(ใส่ URL หลัง deploy)_
+
+## การใช้ AI
+
+<!-- TODO(11.5): สรุปสั้นๆ หลังเขียนรายงานเสร็จ -->
+รายละเอียดว่าใช้ AI ทำอะไร ส่วนไหน และตรวจสอบผลอย่างไร จะอยู่ในรายงานการใช้ AI
+_(ลิงก์ไปยังรายงานจะเพิ่มเมื่อเขียนเสร็จ)_
