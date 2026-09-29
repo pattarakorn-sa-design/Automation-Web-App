@@ -13,6 +13,8 @@ export default function ProfileForm({ fullName }: { fullName: string }) {
     initialState,
   );
   const [clientErrors, setClientErrors] = useState<FormState["fieldErrors"]>();
+  // Hides the last "saved" message once the user starts editing again.
+  const [edited, setEdited] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     const parsed = updateOwnNameSchema.safeParse({
@@ -24,6 +26,7 @@ export default function ProfileForm({ fullName }: { fullName: string }) {
       return;
     }
     setClientErrors(undefined);
+    setEdited(false);
   }
 
   const fieldErrors = clientErrors ?? state.fieldErrors;
@@ -32,6 +35,7 @@ export default function ProfileForm({ fullName }: { fullName: string }) {
     <form
       action={formAction}
       onSubmit={handleSubmit}
+      onChange={() => setEdited(true)}
       noValidate
       className="flex flex-col gap-4"
     >
@@ -55,12 +59,12 @@ export default function ProfileForm({ fullName }: { fullName: string }) {
         ) : null}
       </div>
 
-      {state.formError ? (
+      {state.formError && !clientErrors ? (
         <p role="alert" className="text-sm text-red-600">
           {state.formError}
         </p>
       ) : null}
-      {state.success && !pending ? (
+      {state.success && !pending && !edited ? (
         <p role="status" className="text-sm text-green-700 dark:text-green-400">
           {state.success}
         </p>

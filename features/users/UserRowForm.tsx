@@ -25,6 +25,8 @@ export default function UserRowForm({
 }: UserRowFormProps) {
   const [state, formAction, pending] = useActionState(updateUser, initialState);
   const [clientErrors, setClientErrors] = useState<FormState["fieldErrors"]>();
+  // Hides the last "saved" message once the user starts editing again.
+  const [edited, setEdited] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     const data = new FormData(event.currentTarget);
@@ -39,6 +41,7 @@ export default function UserRowForm({
       return;
     }
     setClientErrors(undefined);
+    setEdited(false);
   }
 
   const fieldErrors = clientErrors ?? state.fieldErrors;
@@ -48,6 +51,7 @@ export default function UserRowForm({
     <form
       action={formAction}
       onSubmit={handleSubmit}
+      onChange={() => setEdited(true)}
       noValidate
       className="flex flex-col gap-2 border-b border-gray-200 py-4 sm:flex-row sm:items-start sm:gap-4 dark:border-gray-800"
     >
@@ -109,12 +113,12 @@ export default function UserRowForm({
             {pending ? "Saving..." : "Save"}
           </button>
         )}
-        {state.formError ? (
+        {state.formError && !clientErrors ? (
           <p role="alert" className="text-sm text-red-600">
             {state.formError}
           </p>
         ) : null}
-        {state.success && !pending ? (
+        {state.success && !pending && !edited ? (
           <p role="status" className="text-sm text-green-700 dark:text-green-400">
             {state.success}
           </p>
