@@ -54,7 +54,7 @@ describe("SubmitButton", () => {
     expect(html).toContain('type="submit"');
     expect(html).toContain("Sign in");
     // Match the attribute itself, not the "disabled:" Tailwind classes.
-    expect(html).not.toMatch(/sdisabled(=|s|>)/);
+    expect(html).not.toMatch(/\sdisabled(=|\s|>)/);
   });
 });
 
