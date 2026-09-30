@@ -4,6 +4,28 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Alarms (`features/alarms/`, `app/alarms/`)
+
+- Status rules live in `features/alarms/status.ts` (`nextStatuses`, `canChangeStatus`,
+  `canUpdateAlarm`) and mirror the database trigger. If a rule changes, change both, or the page
+  will offer an option the database then refuses (shown as "เปลี่ยนสถานะนี้ไม่ได้ ...").
+- Two forms: `AlarmDetailsForm` (admin: machine, code, description, time, cause) on `/alarms/new`
+  and `/alarms/[id]/edit`, and `AlarmStatusForm` (admin and technician: status, cause, action
+  taken) on `/alarms/[id]`. Technicians see a closed alarm read-only.
+- `<input type="datetime-local">` has no time zone. Values are read and written as Bangkok time
+  with `toBangkokInputValue()` / `fromBangkokInputValue()` in `lib/format.ts`, because the server
+  (Vercel) runs in UTC. Never pass a datetime-local string straight to `new Date()`.
+- `/alarms/new?machine=<id>` preselects the machine; the machine page links to it for admins.
+- Machine status does not change when an alarm opens or closes (OQ-03). Admins change it on the
+  machine's edit page.
+- `listMachineOptions()` in `features/machines/queries.ts` returns every machine for a `<select>`.
+
+## Form fields (`components/`)
+
+- `TextAreaField` and `SelectField` take the same props as `TextField` (`label`, `name`, optional
+  `id`, `error`, `hint`) and use the same styling. `SelectField` takes `options` as
+  `{ value, label }[]` and an optional `placeholder` shown as an empty first option.
+
 ## Machines (`features/machines/`, `app/machines/`)
 
 - List filters live in the URL: `/machines?q=cnc&status=Running&type=Robot&page=2`.
