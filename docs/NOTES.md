@@ -4,6 +4,23 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Maintenance (`features/maintenance/`, `app/maintenance/`)
+
+- Who may edit: `canEditMaintenance()` in `rules.ts` (admin: every record, technician: only where
+  they are `technician_id`). RLS enforces the same rule. The Edit link and the edit page use it.
+- Technicians never choose the technician: the form shows their name, and the Server Action
+  replaces whatever was submitted with their own id (`responsibleTechnician()`), so they cannot
+  create or hand a record to someone else.
+- The "Caused by alarm" select only lists alarms of the selected machine (BR-MNT-03), from the
+  200 most recent alarms plus the one already linked. The database rejects a mismatch too; that
+  error is shown under the alarm field.
+- `start_date` / `end_date` are `date` columns: use `<input type="date">`, `bangkokToday()`,
+  `isDateValue()` and `formatDate()` from `lib/format.ts`. No time zone conversion is needed.
+- `/maintenance/new?machine=<id>&alarm=<id>` preselects the fields. The alarm page links to it
+  ("Record maintenance") and the machine page links with the machine only.
+- Option lists for selects: `listProfileOptions()` (`features/users/queries.ts`) and
+  `listAlarmOptions()` (`features/alarms/queries.ts`).
+
 ## Alarms (`features/alarms/`, `app/alarms/`)
 
 - Status rules live in `features/alarms/status.ts` (`nextStatuses`, `canChangeStatus`,
