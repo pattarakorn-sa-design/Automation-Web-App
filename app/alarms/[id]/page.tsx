@@ -57,14 +57,23 @@ export default async function AlarmPage({ params }: PageProps<"/alarms/[id]">) {
           <h1 className="font-mono text-2xl font-semibold">{alarm.alarm_code}</h1>
           <AlarmStatusBadge status={alarm.status} className="self-start" />
         </div>
-        {user.role === "admin" ? (
+        <div className="flex flex-wrap items-start gap-2">
+          {/* Admins and technicians record the repair for this alarm (REQ-MNT-03). */}
           <Link
-            href={`/alarms/${alarm.id}/edit`}
+            href={`/maintenance/new?machine=${alarm.machine_id}&alarm=${alarm.id}`}
             className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
           >
-            Edit details
+            Record maintenance
           </Link>
-        ) : null}
+          {user.role === "admin" ? (
+            <Link
+              href={`/alarms/${alarm.id}/edit`}
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              Edit details
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       <p className="whitespace-pre-line">{alarm.description}</p>
