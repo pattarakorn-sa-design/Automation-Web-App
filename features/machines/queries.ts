@@ -51,6 +51,20 @@ export async function listMachineTypes(): Promise<string[]> {
   return [...new Set(data.map((row) => row.type))];
 }
 
+// Every machine as a choice for a <select>, e.g. in the alarm and maintenance
+// forms and filters. The machine table is small, so this is not paginated.
+export async function listMachineOptions() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("machines")
+    .select("id, machine_code, name")
+    .order("machine_code");
+  if (error) throw new Error(`listMachineOptions failed: ${error.message}`);
+  return data;
+}
+
+export type MachineOption = Awaited<ReturnType<typeof listMachineOptions>>[number];
+
 // A single machine, or null when the id is not a valid uuid or no row exists.
 export async function getMachine(id: string) {
   if (!z.uuid().safeParse(id).success) return null;
