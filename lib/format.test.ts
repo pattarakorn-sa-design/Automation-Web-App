@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime, fromBangkokInputValue, toBangkokInputValue } from "./format";
+import {
+  bangkokToday,
+  formatDate,
+  formatDateTime,
+  fromBangkokInputValue,
+  isDateValue,
+  toBangkokInputValue,
+} from "./format";
+
+describe("date-only values", () => {
+  it("gives today's date in Bangkok, which can be a day ahead of UTC", () => {
+    expect(bangkokToday(new Date("2026-09-29T18:00:00Z"))).toBe("2026-09-30");
+  });
+
+  it("accepts only real calendar dates", () => {
+    expect(isDateValue("2026-02-28")).toBe(true);
+    expect(isDateValue("2028-02-29")).toBe(true);
+    expect(isDateValue("2026-02-30")).toBe(false);
+    expect(isDateValue("2026-9-1")).toBe(false);
+    expect(isDateValue("")).toBe(false);
+  });
+
+  it("formats a date column without shifting the day", () => {
+    expect(formatDate("2026-09-30")).toBe("30 Sept 2026");
+  });
+});
 
 describe("formatDateTime", () => {
   it("shows UTC timestamps in Bangkok time", () => {
