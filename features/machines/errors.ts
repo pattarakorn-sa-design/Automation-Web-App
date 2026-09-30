@@ -4,6 +4,9 @@
 export type MachineFormState = {
   fieldErrors?: Record<string, string[] | undefined>;
   formError?: string;
+  // What the user submitted. React resets a form after its action runs, so
+  // the form shows these again instead of losing the user's input on an error.
+  values?: Record<string, string>;
 };
 
 type DbError = { code?: string } | null | undefined;

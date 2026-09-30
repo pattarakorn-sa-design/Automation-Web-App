@@ -36,13 +36,14 @@ export const machineSchema = z.object({
 
 export type MachineInput = z.infer<typeof machineSchema>;
 
-// Reads the machine fields out of a submitted form.
-export function machineFormValues(formData: FormData) {
-  return {
-    machineCode: formData.get("machineCode"),
-    name: formData.get("name"),
-    type: formData.get("type"),
-    location: formData.get("location"),
-    status: formData.get("status"),
-  };
+const MACHINE_FIELDS = ["machineCode", "name", "type", "location", "status"] as const;
+
+// Reads the machine fields out of a submitted form as plain strings.
+export function machineFormValues(formData: FormData): Record<string, string> {
+  return Object.fromEntries(
+    MACHINE_FIELDS.map((field) => {
+      const value = formData.get(field);
+      return [field, typeof value === "string" ? value : ""];
+    }),
+  );
 }

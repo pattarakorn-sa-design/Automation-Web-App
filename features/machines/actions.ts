@@ -30,9 +30,10 @@ export async function createMachine(
 ): Promise<MachineFormState> {
   await requireRole("admin");
 
-  const parsed = machineSchema.safeParse(machineFormValues(formData));
+  const values = machineFormValues(formData);
+  const parsed = machineSchema.safeParse(values);
   if (!parsed.success) {
-    return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
   }
 
   const supabase = await createClient();
@@ -41,7 +42,7 @@ export async function createMachine(
     .insert(toRow(parsed.data))
     .select("id")
     .single();
-  if (error) return machineSaveError(error);
+  if (error) return { ...machineSaveError(error), values };
 
   revalidatePath("/machines");
   redirect(`/machines/${data.id}`);
@@ -55,9 +56,10 @@ export async function updateMachine(
 ): Promise<MachineFormState> {
   await requireRole("admin");
 
-  const parsed = machineSchema.safeParse(machineFormValues(formData));
+  const values = machineFormValues(formData);
+  const parsed = machineSchema.safeParse(values);
   if (!parsed.success) {
-    return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
   }
 
   const supabase = await createClient();
@@ -66,9 +68,9 @@ export async function updateMachine(
     .update(toRow(parsed.data))
     .eq("id", id)
     .select("id");
-  if (error) return machineSaveError(error);
+  if (error) return { ...machineSaveError(error), values };
   // RLS skips rows the user may not change instead of returning an error.
-  if (data.length === 0) return { formError: MACHINE_NOT_FOUND };
+  if (data.length === 0) return { formError: MACHINE_NOT_FOUND, values };
 
   revalidatePath("/machines");
   revalidatePath(`/machines/${id}`);
