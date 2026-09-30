@@ -4,6 +4,23 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Machines (`features/machines/`, `app/machines/`)
+
+- List filters live in the URL: `/machines?q=cnc&status=Running&type=Robot&page=2`.
+  `parseMachineFilters()` drops invalid values instead of failing, and the filter form uses
+  `next/form` with GET, so refresh and shared links keep the same results.
+- `filters.ts` also has `containsPattern()` (safe ILIKE text for `.or(...)` searches),
+  `pageRange()` and `pageCount()` (20 rows per page). Reuse them for the Alarm and Maintenance lists.
+- Database errors become Thai messages in `errors.ts` by SQLSTATE: `23505` duplicate Machine ID
+  (shown under the field), `23503` machine still has alarms or maintenance, `42501` no permission.
+- React resets a form after its action runs, so a failed save would wipe what the user typed.
+  The Server Action returns the submitted `values` and the form uses them as `defaultValue`.
+- Machine types have no table of their own: the Type filter and the form's suggestions read the
+  distinct `type` values from `machines`.
+- `@next/next/no-html-link-for-pages` fails lint when a plain `<a>` points at a real page, even in
+  a test. Use `<Link>` in app code, or an in-page `#anchor` in tests.
+- Dates: `formatDateTime()` in `lib/format.ts` shows timestamps in Asia/Bangkok time.
+
 ## Auth (`features/auth/`, `proxy.ts`)
 
 - `proxy.ts` refreshes the session cookie and sends signed-out users to `/login`. To make a page

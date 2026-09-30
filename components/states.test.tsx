@@ -13,7 +13,9 @@ describe("EmptyState", () => {
       <EmptyState
         title="ยังไม่มีเครื่องจักร"
         description="เพิ่มเครื่องแรกเพื่อเริ่มต้น"
-        action={<a href="/machines/new">เพิ่มเครื่อง</a>}
+        // An in-page anchor: a link to a real page such as /machines/new
+        // fails the @next/next/no-html-link-for-pages lint rule.
+        action={<a href="#add-machine">เพิ่มเครื่อง</a>}
       />,
     );
 
