@@ -45,7 +45,13 @@ export default async function MachinePage({ params }: PageProps<"/machines/[id]"
         </div>
 
         {user.role === "admin" ? (
-          <div className="flex items-start gap-2">
+          <div className="flex flex-wrap items-start gap-2">
+            <Link
+              href={`/alarms/new?machine=${machine.id}`}
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              New alarm
+            </Link>
             <Link
               href={`/machines/${machine.id}/edit`}
               className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
