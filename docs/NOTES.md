@@ -13,6 +13,10 @@ Keep entries short, in English, and do not mention AI tools.
 - At most `EXPORT_ROW_LIMIT` (5000) rows. The query asks for one extra row; `truncated: true` means
   more rows matched, so tell the user (e.g. a note in the file name or a header) instead of
   silently cutting the file.
+- Supabase returns at most "Max rows" rows per request (Project Settings > API, 1000 by default)
+  and cuts a bigger `.limit()` without an error (issue #42). So the exports read pages of 1000 with
+  `fetchExportRows()` in `lib/export.ts` until 5001 rows or an empty page, and sort by `id` last so
+  rows cannot move between pages. Any new query that may return more than 1000 rows needs the same.
 - Rows are read with the signed-in user's client, so RLS still applies. Call `requireUser()` in
   the Route Handler before calling them. Times are UTC ISO strings; format them with
   `formatDateTime` so the file shows Bangkok time like the screen.
