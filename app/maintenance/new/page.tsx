@@ -7,6 +7,7 @@ import MaintenanceForm from "@/features/maintenance/MaintenanceForm";
 import { createMaintenance } from "@/features/maintenance/actions";
 import { listProfileOptions } from "@/features/users/queries";
 import { bangkokToday } from "@/lib/format";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "New maintenance record",
@@ -28,7 +29,8 @@ export default async function NewMaintenancePage({
     const preselected =
       typeof machine === "string" && machines.some((m) => m.id === machine) ? machine : null;
     alarms = await listAlarmOptions(preselected, typeof alarm === "string" ? alarm : null);
-  } catch {
+  } catch (error) {
+    logLoadError("new maintenance form options", error);
     return (
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8">
         <h1 className="mb-6 text-2xl font-semibold">New maintenance record</h1>

@@ -3,6 +3,7 @@ import { requireUser } from "@/features/auth/session";
 import RecentAlarms from "@/features/dashboard/RecentAlarms";
 import SummaryCards from "@/features/dashboard/SummaryCards";
 import { getDashboard } from "@/features/dashboard/queries";
+import { logLoadError } from "@/lib/log";
 
 // Dashboard (REQ-DSH-01 to REQ-DSH-05). Every signed-in role sees the same
 // numbers. Logout, Profile and Users are in the navbar.
@@ -13,7 +14,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
   let dashboard: Awaited<ReturnType<typeof getDashboard>> | null = null;
   try {
     dashboard = await getDashboard();
-  } catch {
+  } catch (loadError) {
+    logLoadError("dashboard", loadError);
     // Issue #17: a failed query shows the error state, never zeros or a blank page.
     dashboard = null;
   }

@@ -4,6 +4,7 @@ import { requireRole } from "@/features/auth/session";
 import MachineForm from "@/features/machines/MachineForm";
 import { updateMachine } from "@/features/machines/actions";
 import { getMachine, listMachineTypes } from "@/features/machines/queries";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "Edit machine",
@@ -15,7 +16,10 @@ export default async function EditMachinePage({
   await requireRole("admin");
   const machine = await getMachine((await params).id);
   if (!machine) notFound();
-  const types = await listMachineTypes().catch(() => []);
+  const types = await listMachineTypes().catch((error) => {
+    logLoadError("machine type suggestions", error);
+    return [];
+  });
 
   return (
     <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">

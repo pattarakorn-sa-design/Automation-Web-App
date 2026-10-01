@@ -5,6 +5,7 @@ import { createAlarm } from "@/features/alarms/actions";
 import { requireRole } from "@/features/auth/session";
 import { listMachineOptions } from "@/features/machines/queries";
 import { toBangkokInputValue } from "@/lib/format";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "New alarm",
@@ -18,7 +19,8 @@ export default async function NewAlarmPage({ searchParams }: PageProps<"/alarms/
   let machines: Awaited<ReturnType<typeof listMachineOptions>>;
   try {
     machines = await listMachineOptions();
-  } catch {
+  } catch (error) {
+    logLoadError("new alarm form options", error);
     return (
       <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
         <h1 className="mb-6 text-2xl font-semibold">New alarm</h1>

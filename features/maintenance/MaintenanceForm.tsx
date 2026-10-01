@@ -11,6 +11,7 @@ import { fetchAlarmOptions, type AlarmOption } from "@/features/alarms/options";
 import type { Role } from "@/features/auth/roles";
 import type { MachineOption } from "@/features/machines/queries";
 import type { ProfileOption } from "@/features/users/queries";
+import { logLoadError } from "@/lib/log";
 import { createClient } from "@/lib/supabase/client";
 import type { MaintenanceFormState } from "./errors";
 import { MAINTENANCE_STATUSES, MAINTENANCE_TYPES } from "./rules";
@@ -84,7 +85,8 @@ export default function MaintenanceForm({
       if (latestMachine.current === nextMachineId) {
         setAlarmOptions({ status: "ready", alarms: loaded });
       }
-    } catch {
+    } catch (error) {
+      logLoadError("alarm options for the maintenance form", error);
       if (latestMachine.current === nextMachineId) {
         setAlarmOptions({ status: "error", alarms: [] });
       }

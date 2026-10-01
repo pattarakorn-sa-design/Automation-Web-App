@@ -12,6 +12,7 @@ import {
   parseMachineFilters,
 } from "@/features/machines/filters";
 import { listMachines, listMachineTypes } from "@/features/machines/queries";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "Machines",
@@ -30,7 +31,8 @@ export default async function MachinesPage({
       listMachines(filters),
       listMachineTypes(),
     ]);
-  } catch {
+  } catch (error) {
+    logLoadError("machines list", error);
     return (
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <h1 className="mb-6 text-2xl font-semibold">Machines</h1>
