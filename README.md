@@ -103,7 +103,7 @@ erDiagram
 |---|---|---|
 | `id` | uuid | PK, FK → `auth.users.id` |
 | `full_name` | text | 1–100 ตัวอักษร |
-| `role` | `app_role` | `admin` / `technician` ค่าเริ่มต้น `technician` |
+| `role` | `app_role` | `admin` / `technician` / `viewer` ค่าเริ่มต้น `technician` |
 | `created_at`, `updated_at` | timestamptz | อัปเดต `updated_at` อัตโนมัติ |
 
 **`machines`** — ข้อมูลหลักของเครื่องจักร
@@ -163,6 +163,7 @@ erDiagram
 | บันทึกผู้ปิดและเวลาที่ปิด ล้างเมื่อเปิดใหม่ (BR-ALM-04) | trigger `alarms_enforce_update_rules` (ฟังก์ชัน `enforce_alarm_update_rules`) |
 | งานซ่อม Completed ต้องมี Action Taken และวันจบ (BR-MNT-02) | check `maintenance_records_completed_requires_details` |
 | Alarm ที่อ้างต้องเป็นของเครื่องเดียวกับงานซ่อม (BR-MNT-03) | foreign key คู่ `maintenance_records_alarm_same_machine_fkey` |
+| ผู้รับผิดชอบงานซ่อมต้องเป็น Admin หรือ Technician ไม่ใช่ Viewer (REQ-AUTH-08) | trigger `maintenance_records_enforce_assignee_role` (ฟังก์ชัน `enforce_maintenance_assignee_role`) ตรวจตอนสร้างงานและตอนเปลี่ยนผู้รับผิดชอบ |
 | ห้ามเปลี่ยน Role ของตัวเอง (REQ-AUTH-07) | trigger `profiles_prevent_self_role_change` (ฟังก์ชัน `prevent_self_role_change`) |
 | ใครอ่านและแก้อะไรได้ตาม Role | RLS policy ทุกตาราง (ดูตาราง "Role และสิทธิ์โดยสรุป" ด้านบน) |
 
@@ -197,13 +198,13 @@ npm ci
 2. ตั้งค่า Database ใน Supabase (ทำครั้งเดียวต่อ project)
 
    - **รัน migration:** Supabase Dashboard > SQL Editor เปิดไฟล์ใน `supabase/migrations/` ทีละไฟล์
-     **ตามลำดับชื่อไฟล์** (15 ไฟล์ ตั้งแต่ `20260929031200_...` ถึง `20260929052900_...`) วางเนื้อหาแล้วกด Run
+     **ตามลำดับชื่อไฟล์** (17 ไฟล์ ตั้งแต่ `20260929031200_...` ถึง `20261001090100_...`) วางเนื้อหาแล้วกด Run
      ให้ครบทุกไฟล์ ห้ามแก้ไฟล์ที่รันไปแล้ว ถ้าต้องเปลี่ยน schema ให้เพิ่มไฟล์ migration ใหม่
    - **ปิดการสมัครเอง:** Authentication > Sign In / Providers ปิด "Allow new users to sign up"
      ระบบไม่มีหน้าสมัคร บัญชีสร้างโดยเจ้าของ project เท่านั้น
    - **สร้างผู้ใช้:** Authentication > Users > Add user ใส่ Email และรหัสผ่าน
      (ถ้ามีตัวเลือก Auto Confirm User ให้เปิด เพื่อให้ Login ได้ทันที) ระบบสร้างโปรไฟล์ให้อัตโนมัติ
-     โดยเริ่มต้นเป็น `technician`
+     โดยเริ่มต้นเป็น `technician` (Admin ตั้งเป็น `viewer` ได้ที่หน้า Users)
    - **ตั้ง Admin คนแรก:** Table Editor > `profiles` แก้ `role` ของผู้ใช้นั้นเป็น `admin`
      หลังจากนั้น Admin เปลี่ยน Role ของคนอื่นได้ที่หน้า Users
    - **ข้อมูลตัวอย่าง (ไม่บังคับ):** SQL Editor รัน `supabase/seed.sql` ต้องมีผู้ใช้อย่างน้อย 1 คนก่อน
@@ -256,7 +257,7 @@ docs/                เอกสารความต้องการแล�
 - **ใช้ทำอะไร:** ตั้ง CI และ test, สร้าง component และตกแต่งหน้าจอ, เขียนเอกสาร (ฝั่ง Phakkathima) และ
   Database schema, RLS, Auth และ Server Action (ฝั่ง Pattarakorn)
 - **ตรวจผลอย่างไร:** รัน lint, tsc, build และ test ก่อน commit ทุกครั้ง, GitHub Actions บนทุก Pull Request,
-  อีกคนในทีมรีวิวและเป็นคน merge และทดสอบสิทธิ์ของ Admin กับ Technician กับ Database
+  อีกคนในทีมรีวิวและเป็นคน merge และทดสอบสิทธิ์ของทุก Role กับ Database
 - **ปัญหาที่พบ:** เช่น บั๊กของ ConfirmDialog ที่เจอตอนรีวิว ทั้งที่การตรวจอัตโนมัติผ่านหมด
 
 รายละเอียดทั้งหมด พร้อมตารางว่า AI ทำอะไรและคนตัดสินใจอะไร อยู่ใน [รายงานการใช้ AI](docs/AI_REPORT.md)
