@@ -1,7 +1,9 @@
 import { z } from "zod";
+import { hasDateRange, parseDateRange, type DateRange } from "@/lib/dateRange";
 import { MAINTENANCE_STATUSES, type MaintenanceStatus } from "./rules";
 
-export type MaintenanceFilters = {
+// `from` / `to` filter by start date (REQ-SRC-06).
+export type MaintenanceFilters = DateRange & {
   machine?: string;
   status?: MaintenanceStatus;
   technician?: string;
@@ -18,7 +20,7 @@ function uuidOrUndefined(value: string): string | undefined {
   return z.uuid().safeParse(value).success ? value : undefined;
 }
 
-// REQ-SRC-03, REQ-SRC-05: filters come from the URL. Invalid values are
+// REQ-SRC-03, REQ-SRC-05, REQ-SRC-06: filters come from the URL. Invalid values are
 // dropped instead of causing an error.
 export function parseMaintenanceFilters(searchParams: SearchParams): MaintenanceFilters {
   const rawStatus = first(searchParams.status);
@@ -33,12 +35,15 @@ export function parseMaintenanceFilters(searchParams: SearchParams): Maintenance
     machine: uuidOrUndefined(first(searchParams.machine)),
     status,
     technician: uuidOrUndefined(first(searchParams.technician)),
+    ...parseDateRange(first(searchParams.from), first(searchParams.to)),
     page,
   };
 }
 
 export function hasActiveMaintenanceFilters(filters: MaintenanceFilters): boolean {
-  return Boolean(filters.machine || filters.status || filters.technician);
+  return Boolean(
+    filters.machine || filters.status || filters.technician || hasDateRange(filters),
+  );
 }
 
 export function maintenanceFiltersQuery(
@@ -50,6 +55,8 @@ export function maintenanceFiltersQuery(
   if (merged.machine) params.set("machine", merged.machine);
   if (merged.status) params.set("status", merged.status);
   if (merged.technician) params.set("technician", merged.technician);
+  if (merged.from) params.set("from", merged.from);
+  if (merged.to) params.set("to", merged.to);
   if (merged.page > 1) params.set("page", String(merged.page));
   const query = params.toString();
   return query ? `?${query}` : "";
