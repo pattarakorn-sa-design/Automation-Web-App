@@ -4,6 +4,19 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Dashboard (`features/dashboard/`, `app/page.tsx`)
+
+- Counts come from the database, one `count: "exact", head: true` query per status (no rows are
+  sent), and `buildSummary()` adds them up. Statuses are enums, so per-status counts always add up
+  to the totals. "Alarms not closed" = Open + In Progress; "Maintenance not finished" = Pending +
+  In Progress.
+- If any dashboard query fails, the page shows `ErrorState` instead of numbers (issue #17). When
+  Supabase itself is unreachable, `proxy.ts` cannot check the session and sends the user to
+  `/login` instead; that is accepted. TC-DSH-06 in `docs/TEST_CHECKLIST.md` tests the error
+  state by breaking one query locally.
+- Each card and status count links to the matching list with its filter in the URL, e.g.
+  `/alarms?status=Open`. The Logout, Profile and Users links live only in the navbar.
+
 ## Maintenance (`features/maintenance/`, `app/maintenance/`)
 
 - Who may edit: `canEditMaintenance()` in `rules.ts` (admin: every record, technician: only where
@@ -187,10 +200,6 @@ Import them instead of writing your own, so every page looks the same.
   role and a Logout button. On screens below `lg` (1024 px) the menu folds behind a button.
   - To add or hide a menu item, edit `NAV_ITEMS` in `components/navigation.ts` (`roles` limits who
     sees it). This only hides links: the page must still call `requireRole(...)`.
-  - The menu links to pages that arrive with the feature PRs (`/machines`, `/alarms`,
-    `/maintenance`), so those links show a 404 until the page exists.
-  - The temporary home page still has its own Logout button and Profile/Users links. Remove them
-    when the real Dashboard replaces that page (phase 7).
   - Because the layout reads the session, every page (including not-found) is rendered on demand.
 - Form pieces, for the login page and later forms. None of them touches auth or data, so wire them to
   your own Server Action:
