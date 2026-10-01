@@ -20,6 +20,11 @@ Keep entries short, in English, and do not mention AI tools.
   scripts would break it: add a nonce if one is ever set (see the Next.js CSP guide).
 - Reading `localStorage` throws when site data is blocked. The script and the button both catch it
   and fall back to the device setting (the button keeps its choice in memory until reload).
+- With several tabs open, a change made in one tab reaches the others as a `storage` event.
+  `subscribe()` in `components/themeStore.ts` applies it to the page as well as to the button: if
+  only the button re-rendered, its label would say Dark while the page stayed light. The theme logic
+  (read, apply, save, subscribe) is in `themeStore.ts`, without React, so it can be tested with a
+  stand-in window. To check this by hand, open two tabs of the same site and press the button in one.
 - The button is not on `/login` (the navbar is not shown there). The login page still follows the
   saved choice or the device.
 - To look at a page in dark mode without changing the device: run
