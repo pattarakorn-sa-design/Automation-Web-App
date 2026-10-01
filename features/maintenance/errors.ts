@@ -19,6 +19,8 @@ export const ALARM_OTHER_MACHINE = "Alarm ที่เลือกต้อง�
 export const COMPLETED_NEEDS_DETAILS =
   "กรุณากรอก Action Taken และวันจบก่อนตั้งสถานะเป็น Completed";
 export const END_BEFORE_START = "วันจบต้องไม่ก่อนวันเริ่ม";
+export const ASSIGNEE_NOT_WORKER =
+  "ผู้รับผิดชอบต้องเป็น Admin หรือ Technician กรุณาเลือกใหม่";
 export const CHECK_FAILED = "ข้อมูลไม่ตรงตามเงื่อนไขของระบบ กรุณาตรวจสอบอีกครั้ง";
 
 export function maintenanceSaveError(error: DbError): MaintenanceFormState {
@@ -34,7 +36,10 @@ export function maintenanceSaveError(error: DbError): MaintenanceFormState {
         return { fieldErrors: { technicianId: ["ไม่พบ Technician ที่เลือก กรุณาเลือกใหม่"] } };
       }
       return { fieldErrors: { machineId: ["ไม่พบเครื่องจักรที่เลือก กรุณาเลือกใหม่"] } };
-    case "23514": // check constraint: the form normally catches these first
+    case "23514": // check constraint or trigger: the form normally catches these first
+      if (message.includes("maintenance_records_technician_role")) {
+        return { fieldErrors: { technicianId: [ASSIGNEE_NOT_WORKER] } };
+      }
       if (message.includes("maintenance_records_completed_requires_details")) {
         return { formError: COMPLETED_NEEDS_DETAILS };
       }

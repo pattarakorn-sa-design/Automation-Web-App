@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasRole } from "./roles";
+import { hasRole, isWorkerRole } from "./roles";
 
 describe("hasRole", () => {
   it("allows a role that is in the list", () => {
@@ -13,5 +13,13 @@ describe("hasRole", () => {
 
   it("rejects every role when the list is empty", () => {
     expect(hasRole("admin", [])).toBe(false);
+  });
+});
+
+describe("isWorkerRole (REQ-AUTH-08)", () => {
+  it("is true for admins and technicians and false for viewers", () => {
+    expect(isWorkerRole("admin")).toBe(true);
+    expect(isWorkerRole("technician")).toBe(true);
+    expect(isWorkerRole("viewer")).toBe(false);
   });
 });

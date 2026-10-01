@@ -240,7 +240,7 @@ export type Database = {
     }
     Enums: {
       alarm_status: "Open" | "In Progress" | "Closed"
-      app_role: "admin" | "technician"
+      app_role: "admin" | "technician" | "viewer"
       machine_status: "Running" | "Stop" | "Alarm" | "Maintenance"
       maintenance_status: "Pending" | "In Progress" | "Completed"
       maintenance_type: "Corrective" | "Preventive"
@@ -372,7 +372,7 @@ export const Constants = {
   public: {
     Enums: {
       alarm_status: ["Open", "In Progress", "Closed"],
-      app_role: ["admin", "technician"],
+      app_role: ["admin", "technician", "viewer"],
       machine_status: ["Running", "Stop", "Alarm", "Maintenance"],
       maintenance_status: ["Pending", "In Progress", "Completed"],
       maintenance_type: ["Corrective", "Preventive"],

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ALARM_OTHER_MACHINE,
+  ASSIGNEE_NOT_WORKER,
   CHECK_FAILED,
   COMPLETED_NEEDS_DETAILS,
   END_BEFORE_START,
@@ -60,6 +61,16 @@ describe("maintenanceSaveError", () => {
             'new row for relation "maintenance_records" violates check constraint "maintenance_records_end_after_start"',
         }),
       ).toEqual({ fieldErrors: { endDate: [END_BEFORE_START] } });
+    });
+
+    it("points at the technician when the assignee is not an admin or technician", () => {
+      expect(
+        maintenanceSaveError({
+          code: "23514",
+          message:
+            "maintenance_records_technician_role: the responsible person must be an admin or a technician",
+        }),
+      ).toEqual({ fieldErrors: { technicianId: [ASSIGNEE_NOT_WORKER] } });
     });
 
     it("falls back to the general check message for other checks", () => {

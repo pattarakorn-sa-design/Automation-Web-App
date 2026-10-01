@@ -1,5 +1,5 @@
 import { Constants, type Enums } from "@/types/database";
-import type { Role } from "@/features/auth/roles";
+import { isWorkerRole, type Role } from "@/features/auth/roles";
 
 export type AlarmStatus = Enums<"alarm_status">;
 
@@ -16,13 +16,16 @@ const TRANSITIONS: Record<AlarmStatus, readonly AlarmStatus[]> = {
 };
 
 export function nextStatuses(current: AlarmStatus, role: Role): AlarmStatus[] {
+  if (!isWorkerRole(role)) return [];
   if (current === "Closed" && role !== "admin") return [];
   return [...TRANSITIONS[current]];
 }
 
 // Whether this user may save changes to an alarm in this status at all
-// (status, cause or action taken). Closed alarms are read-only except for admins.
+// (status, cause or action taken). Closed alarms are read-only except for
+// admins, and viewers never update an alarm.
 export function canUpdateAlarm(current: AlarmStatus, role: Role): boolean {
+  if (!isWorkerRole(role)) return false;
   return current !== "Closed" || role === "admin";
 }
 

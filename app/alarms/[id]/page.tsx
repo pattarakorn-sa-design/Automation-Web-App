@@ -6,6 +6,7 @@ import AlarmStatusForm from "@/features/alarms/AlarmStatusForm";
 import { updateAlarmStatus } from "@/features/alarms/actions";
 import { getAlarm } from "@/features/alarms/queries";
 import { canUpdateAlarm, nextStatuses } from "@/features/alarms/status";
+import { isWorkerRole } from "@/features/auth/roles";
 import { requireUser } from "@/features/auth/session";
 import { formatDateTime } from "@/lib/format";
 import { logLoadError } from "@/lib/log";
@@ -62,13 +63,16 @@ export default async function AlarmPage({ params }: PageProps<"/alarms/[id]">) {
           <AlarmStatusBadge status={alarm.status} className="self-start" />
         </div>
         <div className="flex flex-wrap items-start gap-2">
-          {/* Admins and technicians record the repair for this alarm (REQ-MNT-03). */}
-          <Link
-            href={`/maintenance/new?machine=${alarm.machine_id}&alarm=${alarm.id}`}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-          >
-            Record maintenance
-          </Link>
+          {/* Admins and technicians record the repair for this alarm (REQ-MNT-03);
+              viewers only read. */}
+          {isWorkerRole(user.role) ? (
+            <Link
+              href={`/maintenance/new?machine=${alarm.machine_id}&alarm=${alarm.id}`}
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              Record maintenance
+            </Link>
+          ) : null}
           {user.role === "admin" ? (
             <Link
               href={`/alarms/${alarm.id}/edit`}
