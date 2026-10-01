@@ -3,55 +3,10 @@
 import { useEffect, useSyncExternalStore } from "react";
 import {
   THEME_LABELS,
-  THEME_STORAGE_KEY,
-  isDark,
   nextTheme,
-  parseTheme,
   type Theme,
 } from "./theme";
-
-// Same-tab changes are announced with this event; other tabs fire `storage`.
-const CHANGE_EVENT = "themechange";
-const DARK_QUERY = "(prefers-color-scheme: dark)";
-
-// Used only when localStorage is blocked, so the button still shows what the
-// page is doing instead of staying on System.
-let fallbackTheme: Theme = "system";
-
-function readTheme(): Theme {
-  try {
-    return parseTheme(localStorage.getItem(THEME_STORAGE_KEY));
-  } catch {
-    return fallbackTheme;
-  }
-}
-
-function applyTheme(theme: Theme) {
-  const dark = isDark(theme, window.matchMedia(DARK_QUERY).matches);
-  document.documentElement.classList.toggle("dark", dark);
-}
-
-function saveTheme(theme: Theme) {
-  fallbackTheme = theme;
-  try {
-    // System is "no choice made", so it removes the key.
-    if (theme === "system") localStorage.removeItem(THEME_STORAGE_KEY);
-    else localStorage.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Blocked storage: the choice only lasts until the page is reloaded.
-  }
-  applyTheme(theme);
-  window.dispatchEvent(new Event(CHANGE_EVENT));
-}
-
-function subscribe(onChange: () => void) {
-  window.addEventListener(CHANGE_EVENT, onChange);
-  window.addEventListener("storage", onChange);
-  return () => {
-    window.removeEventListener(CHANGE_EVENT, onChange);
-    window.removeEventListener("storage", onChange);
-  };
-}
+import { DARK_QUERY, applyTheme, readTheme, saveTheme, subscribe } from "./themeStore";
 
 // The server cannot know the saved theme, so it renders System. The browser
 // reads the real value right after hydration. The page itself is already
