@@ -29,6 +29,12 @@ describe("SummaryCards", () => {
     expect(html).toContain('href="/maintenance?status=Completed"');
   });
 
+  it("links every headline number to its full list", () => {
+    expect(html).toMatch(/<a [^>]*href="\/machines"[^>]*>10<span[^>]*> in total<\/span><\/a>/);
+    expect(html).toMatch(/<a [^>]*href="\/alarms"[^>]*>5<span[^>]*> of 9<\/span><\/a>/);
+    expect(html).toMatch(/<a [^>]*href="\/maintenance"[^>]*>4<span[^>]*> of 8<\/span><\/a>/);
+  });
+
   it("makes the whole row the link in every card, label and count together", () => {
     // Machine row: badge and count inside one link.
     expect(html).toMatch(/<a [^>]*href="\/machines\?status=Stop"[^>]*>.*?Stop<\/span>.*?>2<\/span><\/a>/);

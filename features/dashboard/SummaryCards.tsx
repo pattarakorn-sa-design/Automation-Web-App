@@ -30,8 +30,22 @@ function StatusRow({
   );
 }
 
-// Summary cards (REQ-DSH-01 to REQ-DSH-04). Each status row links to the list
-// it counts, filtered by that status.
+// Headline number of a card, linking to the full list it summarises.
+function Headline({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="-mx-2 self-start rounded-md px-2 text-3xl font-semibold hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-blue-600 dark:hover:bg-gray-800"
+    >
+      {children}
+    </Link>
+  );
+}
+
+const subtle = "text-base font-normal text-gray-600 dark:text-gray-400";
+
+// Summary cards (REQ-DSH-01 to REQ-DSH-04). The headline number links to the
+// full list and each status row to the list filtered by that status.
 export default function SummaryCards({ summary }: { summary: DashboardSummary }) {
   const { machines, alarms, maintenance } = summary;
 
@@ -41,10 +55,10 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
         <h2 id="card-machines" className="text-sm font-medium text-gray-600 dark:text-gray-400">
           Machines
         </h2>
-        <p className="text-3xl font-semibold">
+        <Headline href="/machines">
           {machines.total}
-          <span className="text-base font-normal text-gray-600 dark:text-gray-400"> in total</span>
-        </p>
+          <span className={subtle}> in total</span>
+        </Headline>
         <ul className="flex flex-col gap-1">
           {Object.entries(machines.byStatus).map(([status, count]) => (
             <StatusRow
@@ -61,13 +75,10 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
         <h2 id="card-alarms" className="text-sm font-medium text-gray-600 dark:text-gray-400">
           Alarms not closed
         </h2>
-        <p className="text-3xl font-semibold">
+        <Headline href="/alarms">
           {alarms.open}
-          <span className="text-base font-normal text-gray-600 dark:text-gray-400">
-            {" "}
-            of {alarms.total}
-          </span>
-        </p>
+          <span className={subtle}> of {alarms.total}</span>
+        </Headline>
         <ul className="flex flex-col gap-1">
           <StatusRow href="/alarms?status=Open" label="Open" count={alarms.byStatus.Open} />
           <StatusRow
@@ -86,13 +97,10 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
         >
           Maintenance not finished
         </h2>
-        <p className="text-3xl font-semibold">
+        <Headline href="/maintenance">
           {maintenance.unfinished}
-          <span className="text-base font-normal text-gray-600 dark:text-gray-400">
-            {" "}
-            of {maintenance.total}
-          </span>
-        </p>
+          <span className={subtle}> of {maintenance.total}</span>
+        </Headline>
         <ul className="flex flex-col gap-1">
           <StatusRow
             href="/maintenance?status=Pending"

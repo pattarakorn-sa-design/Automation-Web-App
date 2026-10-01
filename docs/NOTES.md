@@ -14,7 +14,8 @@ Keep entries short, in English, and do not mention AI tools.
   Supabase itself is unreachable, `proxy.ts` cannot check the session and sends the user to
   `/login` instead; that is accepted. TC-DSH-06 in `docs/TEST_CHECKLIST.md` tests the error
   state by breaking one query locally.
-- Every status row in the cards is one link (label and count together, with a hover background)
+- The headline number of each card links to the full list, and every status row is one link
+  (label and count together, with a hover background)
   to the matching list with its filter in the URL, e.g. `/alarms?status=Open`. Keep the whole row
   clickable when restyling: a link on only the number or only the label was easy to miss. The Logout, Profile and Users links live only in the navbar.
 
