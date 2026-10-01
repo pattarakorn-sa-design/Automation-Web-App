@@ -85,9 +85,23 @@ npm ci
 
    `.env.local` ถูกกันไว้ใน `.gitignore` อยู่แล้ว
 
-2. ตั้งค่า Database ด้วยไฟล์ใน `supabase/`
-   <!-- TODO(11.1): เพิ่มขั้นตอนรัน migration และ seed.sql หลัง feat/db-schema และ chore/seed-data ถูก merge -->
-   _(ขั้นตอนนี้จะเพิ่มเมื่อไฟล์ migration และ seed ถูก merge เข้า `main`)_
+2. ตั้งค่า Database ใน Supabase (ทำครั้งเดียวต่อ project)
+
+   - **รัน migration:** Supabase Dashboard > SQL Editor เปิดไฟล์ใน `supabase/migrations/` ทีละไฟล์
+     **ตามลำดับชื่อไฟล์** (15 ไฟล์ ตั้งแต่ `20260929031200_...` ถึง `20260929052900_...`) วางเนื้อหาแล้วกด Run
+     ให้ครบทุกไฟล์ ห้ามแก้ไฟล์ที่รันไปแล้ว ถ้าต้องเปลี่ยน schema ให้เพิ่มไฟล์ migration ใหม่
+   - **ปิดการสมัครเอง:** Authentication > Sign In / Providers ปิด "Allow new users to sign up"
+     ระบบไม่มีหน้าสมัคร บัญชีสร้างโดยเจ้าของ project เท่านั้น
+   - **สร้างผู้ใช้:** Authentication > Users > Add user ใส่ Email และรหัสผ่าน
+     (ถ้ามีตัวเลือก Auto Confirm User ให้เปิด เพื่อให้ Login ได้ทันที) ระบบสร้างโปรไฟล์ให้อัตโนมัติ
+     โดยเริ่มต้นเป็น `technician`
+   - **ตั้ง Admin คนแรก:** Table Editor > `profiles` แก้ `role` ของผู้ใช้นั้นเป็น `admin`
+     หลังจากนั้น Admin เปลี่ยน Role ของคนอื่นได้ที่หน้า Users
+   - **ข้อมูลตัวอย่าง (ไม่บังคับ):** SQL Editor รัน `supabase/seed.sql` ต้องมีผู้ใช้อย่างน้อย 1 คนก่อน
+     ได้เครื่องจักร 10 เครื่อง, Alarm 9 รายการ และงานซ่อม 8 รายการ รันซ้ำได้โดยไม่ซ้ำข้อมูล
+
+   ไฟล์ `types/database.ts` มีอยู่ใน repo แล้ว ไม่ต้องสร้างเอง (สร้างใหม่ด้วย `npm run db:types`
+   ได้เฉพาะผู้มีสิทธิ์ใน Supabase project ที่ผูกไว้ ดูรายละเอียดใน [docs/NOTES.md](docs/NOTES.md))
 
 3. รันเซิร์ฟเวอร์สำหรับพัฒนา
 
