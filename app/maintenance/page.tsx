@@ -52,13 +52,22 @@ export default async function MaintenancePage({
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">Maintenance</h1>
-        {/* Admins and technicians both record work (REQ-MNT-01). */}
-        <Link
-          href="/maintenance/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          New record
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* A plain link: the file is a download, not a page to navigate to. */}
+          <a
+            href={`/maintenance/export${maintenanceFiltersQuery(filters, { page: 1 })}`}
+            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Export CSV
+          </a>
+          {/* Admins and technicians both record work (REQ-MNT-01). */}
+          <Link
+            href="/maintenance/new"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            New record
+          </Link>
+        </div>
       </div>
 
       <MaintenanceFilters filters={filters} machines={machines} people={people} />
