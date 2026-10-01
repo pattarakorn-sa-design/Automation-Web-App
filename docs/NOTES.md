@@ -4,6 +4,21 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## CSV export (plan 9.4, `lib/export.ts`)
+
+- `exportAlarms(filters)` and `exportMaintenance(filters)` in each domain's `queries.ts` return
+  `{ rows, truncated }`. They take the same filters as the list pages (use
+  `parseAlarmFilters` / `parseMaintenanceFilters` on the request URL), ignore `page`, and keep the
+  list order. Do not reuse `listAlarms` / `listMaintenance` for exports: they return one page.
+- At most `EXPORT_ROW_LIMIT` (5000) rows. The query asks for one extra row; `truncated: true` means
+  more rows matched, so tell the user (e.g. a note in the file name or a header) instead of
+  silently cutting the file.
+- Rows are read with the signed-in user's client, so RLS still applies. Call `requireUser()` in
+  the Route Handler before calling them. Times are UTC ISO strings; format them with
+  `formatDateTime` so the file shows Bangkok time like the screen.
+- If an export query throws, call `logLoadError("alarms export", error)` (see below) and return
+  a 500 response with a Thai message instead of an empty file.
+
 ## Logging load errors (`lib/log.ts`)
 
 - Every `catch` that shows an `ErrorState` or falls back to empty data calls
