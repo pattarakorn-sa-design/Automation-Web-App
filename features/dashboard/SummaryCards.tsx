@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import StatusBadge from "@/components/StatusBadge";
+import AlarmStatusBadge from "@/features/alarms/AlarmStatusBadge";
+import MaintenanceStatusBadge from "@/features/maintenance/MaintenanceStatusBadge";
 import type { DashboardSummary } from "./summary";
 
 const cardClass =
@@ -80,13 +82,22 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
           <span className={subtle}> of {alarms.total}</span>
         </Headline>
         <ul className="flex flex-col gap-1">
-          <StatusRow href="/alarms?status=Open" label="Open" count={alarms.byStatus.Open} />
+          {/* Same coloured badges as the lists, like the machine card above. */}
+          <StatusRow
+            href="/alarms?status=Open"
+            label={<AlarmStatusBadge status="Open" />}
+            count={alarms.byStatus.Open}
+          />
           <StatusRow
             href="/alarms?status=In+Progress"
-            label="In Progress"
+            label={<AlarmStatusBadge status="In Progress" />}
             count={alarms.byStatus["In Progress"]}
           />
-          <StatusRow href="/alarms?status=Closed" label="Closed" count={alarms.byStatus.Closed} />
+          <StatusRow
+            href="/alarms?status=Closed"
+            label={<AlarmStatusBadge status="Closed" />}
+            count={alarms.byStatus.Closed}
+          />
         </ul>
       </section>
 
@@ -104,17 +115,17 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
         <ul className="flex flex-col gap-1">
           <StatusRow
             href="/maintenance?status=Pending"
-            label="Pending"
+            label={<MaintenanceStatusBadge status="Pending" />}
             count={maintenance.byStatus.Pending}
           />
           <StatusRow
             href="/maintenance?status=In+Progress"
-            label="In Progress"
+            label={<MaintenanceStatusBadge status="In Progress" />}
             count={maintenance.byStatus["In Progress"]}
           />
           <StatusRow
             href="/maintenance?status=Completed"
-            label="Completed"
+            label={<MaintenanceStatusBadge status="Completed" />}
             count={maintenance.byStatus.Completed}
           />
         </ul>
