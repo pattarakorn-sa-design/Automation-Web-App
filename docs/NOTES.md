@@ -4,6 +4,31 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Submission status (updated 2026-10-02)
+
+Read this first: it says where the project stands and what is left before submission.
+
+- **Done:** all plan phases 0–11 and bonus 9.2–9.5 (date range filter, viewer role, CSV export,
+  dark mode). Test round 10.2 passed on Vercel with admin, technician and viewer accounts; the
+  results are ticked in `docs/TEST_CHECKLIST.md`. The one bug found afterwards (#56, viewer message
+  on open alarms) is fixed. Secret scan 10.4 found nothing. No open issues.
+- **Submission checklist (11.6), all checked on 2026-10-02:** commit history from both of us on
+  `main`; Vercel URL loads and redirects to `/login`; `supabase/schema.sql`; README with every
+  required section plus Screenshots and AI usage; 58 screenshots in `docs/screenshots/`;
+  `docs/AI_REPORT.md`; CI green on the latest `main` commit.
+- **Production data** matches `supabase/seed.sql` (10 machines, 9 alarms, 8 maintenance records, no
+  `TST-` rows) and every account has its original role. Keep it that way: if you test on Vercel
+  again, follow Notes item 4 of the checklist and tell Pattarakorn so the test rows get deleted.
+- **Known limits, already explained in the README / AI report:** the screenshots marked "in the
+  local app" come from a mock API with seed data, not from Vercel; the Users page is never captured
+  from Vercel because it shows real emails.
+- **Next:** after the last pull request (the one that adds this entry) is merged, wait for CI to
+  pass on that commit and for Vercel to deploy it, then submit. From then on change nothing on
+  `main` unless a real bug is found.
+- **If something must change after all:** keep the usual branch and review flow. A new migration
+  needs `npm run db:schema` and both files committed; any change in the number of tests means
+  updating the count in section 5.2 of `docs/AI_REPORT.md` (now 324 tests in 44 files).
+
 ## Screenshots (`docs/screenshots/`)
 
 - Files are named `<page>-<light|dark>.png`, with `-mobile` for 360 px and a `technician-` or `viewer-` prefix for those roles. Everything else
