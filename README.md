@@ -99,6 +99,7 @@ Viewer ใช้กับผู้ที่ต้องดูภาพรวม�
 
 ฐานข้อมูลเป็น PostgreSQL บน Supabase มี 4 ตารางใน schema `public` สร้างจากไฟล์ใน
 [`supabase/migrations/`](supabase/migrations/) และเปิด Row Level Security (RLS) ทุกตาราง
+schema ทั้งหมดในไฟล์เดียวอยู่ที่ [`supabase/schema.sql`](supabase/schema.sql)
 
 ### ความสัมพันธ์
 
@@ -223,6 +224,8 @@ npm ci
    - **รัน migration:** Supabase Dashboard > SQL Editor เปิดไฟล์ใน `supabase/migrations/` ทีละไฟล์
      **ตามลำดับชื่อไฟล์** (17 ไฟล์ ตั้งแต่ `20260929031200_...` ถึง `20261001090100_...`) วางเนื้อหาแล้วกด Run
      ให้ครบทุกไฟล์ ห้ามแก้ไฟล์ที่รันไปแล้ว ถ้าต้องเปลี่ยน schema ให้เพิ่มไฟล์ migration ใหม่
+     **หรือ** วาง `supabase/schema.sql` ทั้งไฟล์แล้วกด Run ครั้งเดียว (ไฟล์นี้คือ migration ทั้งหมดเรียงต่อกัน
+     สร้างด้วย `npm run db:schema` และเป็นไฟล์ Database Schema ที่ใช้ส่งงาน) ใช้กับ project ใหม่ที่ยังไม่เคยรัน migration เท่านั้น
    - **ปิดการสมัครเอง:** Authentication > Sign In / Providers ปิด "Allow new users to sign up"
      ระบบไม่มีหน้าสมัคร บัญชีสร้างโดยเจ้าของ project เท่านั้น
    - **สร้างผู้ใช้:** Authentication > Users > Add user ใส่ Email และรหัสผ่าน
@@ -253,6 +256,7 @@ npm ci
 | `npx tsc --noEmit` | ตรวจ type ของ TypeScript |
 | `npm run build` | build สำหรับ production |
 | `npm test` | รัน unit test (Vitest) |
+| `npm run db:schema` | สร้าง `supabase/schema.sql` ใหม่จาก migration (รันหลังเพิ่ม migration) |
 
 รัน `npm run lint`, `npx tsc --noEmit` และ `npm run build` ให้ผ่านก่อน commit ทุกครั้ง
 GitHub Actions จะรัน install, lint, build และ test ให้อัตโนมัติเมื่อ push และเมื่อเปิด Pull Request
@@ -265,7 +269,7 @@ components/          UI ที่ใช้ซ้ำ (StatusBadge, EmptyState, Er
 features/<domain>/   โค้ดของแต่ละส่วนงาน: auth, machines, alarms, maintenance, dashboard
 lib/supabase/        Supabase client ฝั่ง browser และ server
 types/               TypeScript types
-supabase/            migration และ seed
+supabase/            migration, seed และ schema.sql
 docs/                เอกสารความต้องการและโน้ตของทีม
 ```
 
