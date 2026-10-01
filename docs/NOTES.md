@@ -8,9 +8,11 @@ Keep entries short, in English, and do not mention AI tools.
 
 - Each main table has three result columns: **A** (Admin), **T** (Technician) and **V** (Viewer). Use `-` for a role the
   case does not apply to. Add a new case to every table that has the role it affects, and keep the IDs unique.
-- Test records on Vercel cannot be cleaned up: alarms have no delete, and a machine with an alarm or maintenance record cannot
+- Test records cannot be deleted from the app: alarms have no delete, and a machine with an alarm or maintenance record cannot
   be deleted. Use a dedicated test machine (`TST-001`) and `TST-` alarm codes, close what you create, and run the Dashboard
-  count case (TC-DSH-01) before creating test data. The steps are in Notes item 4 of the checklist.
+  count case (TC-DSH-01) before creating test data. After the Vercel test round the database owner deletes the `TST-001` rows
+  in the SQL Editor and checks that the Dashboard is back to the seed numbers (Notes item 4 of the checklist).
+- Search and filter cases use the seed codes (`INJ-002`, `CNC-001`, ...). Do not use a machine code that is not in `supabase/seed.sql`.
 - The date range cases need alarms at 23:30 and 00:30 Bangkok time on consecutive days, because that is where a filter that
   uses UTC days goes wrong. Occurred At is typed in Bangkok time.
 
