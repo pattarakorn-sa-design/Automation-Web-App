@@ -51,7 +51,10 @@
 | เปลี่ยนสถานะ Alarm | ✅ | ✅ |
 | สร้าง Maintenance Record | ✅ | ✅ (ในชื่อของตนเองเท่านั้น) |
 | แก้ไข Maintenance Record | ทุกรายการ | เฉพาะที่ตนรับผิดชอบ |
-| จัดการ User และ Role | ✅ | ❌ |
+| Export CSV (Alarm, Maintenance) | ✅ | ✅ |
+| จัดการ User และเปลี่ยน Role ของผู้อื่น | ✅ | ❌ |
+| แก้ชื่อที่แสดงของตนเอง | ✅ | ✅ |
+| เปลี่ยน Role ของตนเอง | ❌ | ❌ |
 
 ตารางเต็มและกฎทางธุรกิจอยู่ใน [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 
@@ -60,7 +63,8 @@
 | ส่วน | เทคโนโลยี |
 |---|---|
 | Frontend / Backend | Next.js 16 (App Router), React 19, TypeScript |
-| Styling | Tailwind CSS v4 |
+| Styling | Tailwind CSS v4 (รองรับโหมดมืดด้วย class `dark`) |
+| Validation | Zod ตรวจข้อมูลทั้งฝั่ง client และ server ด้วย schema เดียวกัน และมี constraint ใน Database อีกชั้น |
 | Database / Auth | Supabase (PostgreSQL, Supabase Auth, Row Level Security) ผ่าน `@supabase/supabase-js` และ `@supabase/ssr` |
 | Testing | Vitest |
 | CI | GitHub Actions (lint, build, test) |
