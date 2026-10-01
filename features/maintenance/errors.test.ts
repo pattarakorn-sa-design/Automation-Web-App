@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   ALARM_OTHER_MACHINE,
+  CHECK_FAILED,
+  COMPLETED_NEEDS_DETAILS,
+  END_BEFORE_START,
   MAINTENANCE_NO_PERMISSION,
   MAINTENANCE_SAVE_FAILED,
   maintenanceSaveError,
@@ -36,6 +39,38 @@ describe("maintenanceSaveError", () => {
         message: 'violates foreign key constraint "maintenance_records_machine_id_fkey"',
       }).fieldErrors,
     ).toHaveProperty("machineId");
+  });
+
+  describe("check violations (23514, issue #28)", () => {
+    it("asks for action taken and an end date to complete", () => {
+      expect(
+        maintenanceSaveError({
+          code: "23514",
+          message:
+            'new row for relation "maintenance_records" violates check constraint "maintenance_records_completed_requires_details"',
+        }),
+      ).toEqual({ formError: COMPLETED_NEEDS_DETAILS });
+    });
+
+    it("points at the end date when it is before the start date", () => {
+      expect(
+        maintenanceSaveError({
+          code: "23514",
+          message:
+            'new row for relation "maintenance_records" violates check constraint "maintenance_records_end_after_start"',
+        }),
+      ).toEqual({ fieldErrors: { endDate: [END_BEFORE_START] } });
+    });
+
+    it("falls back to the general check message for other checks", () => {
+      expect(
+        maintenanceSaveError({
+          code: "23514",
+          message:
+            'new row for relation "maintenance_records" violates check constraint "maintenance_records_problem_check"',
+        }),
+      ).toEqual({ formError: CHECK_FAILED });
+    });
   });
 
   it("falls back to a generic message", () => {
