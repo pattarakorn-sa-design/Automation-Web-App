@@ -17,6 +17,19 @@ Keep entries short, in English, and do not mention AI tools.
 - A viewer picture of an Open alarm is left out on purpose: that page tells a viewer "This alarm is closed" (the message in
   `app/alarms/[id]/page.tsx` is shown whenever the alarm cannot be edited). Issue #56 tracks the fix; retake the picture after it is merged.
 
+## Schema file (plan 11.3, `supabase/schema.sql`)
+
+- `supabase/schema.sql` is every migration joined in file name order, for the submission. It is
+  generated: after adding a migration run `npm run db:schema` and commit both files. A test fails
+  when the file is out of date, so CI catches a forgotten update.
+- It was run as one script inside a single transaction on a fresh Postgres (PGlite, with stand-ins
+  for `auth.users` and `auth.uid()`), then `seed.sql`: 4 tables with RLS, 5 enums, 13 policies,
+  8 triggers, and 10 / 9 / 8 seed rows. Adding the `viewer` enum value in the same transaction is
+  fine because nothing in the file uses that value as a literal.
+- The builder is `supabase/build-schema.mts`. The `.mts` extension makes Node run it as an ES
+  module; a `.ts` file prints a MODULE_TYPELESS_PACKAGE_JSON warning unless package.json sets
+  `"type": "module"`, which we do not want to change for the whole project.
+
 ## Manual test checklist (`docs/TEST_CHECKLIST.md`)
 
 - Each main table has three result columns: **A** (Admin), **T** (Technician) and **V** (Viewer). Use `-` for a role the
@@ -43,6 +56,9 @@ Keep entries short, in English, and do not mention AI tools.
   It checks inserts and changes of `technician_id` only, so a record whose technician later became a
   viewer can still be edited. Its error is 23514 with `maintenance_records_technician_role` in the
   message, mapped to a Thai message on the Technician field.
+- When a page hides a form from a viewer, also check the text shown instead. The alarm page first
+  told viewers "This alarm is closed" on open alarms (issue #56); `alarmReadOnlyMessage()` in
+  `features/alarms/status.ts` now picks the message by role and status.
 - The two migrations must run in order and as separate runs: Postgres cannot use a new enum value in
   the transaction that added it. After running them, run `npm run db:types`.
 - The migrations were tested on a throwaway in-memory Postgres (PGlite) with stand-ins for

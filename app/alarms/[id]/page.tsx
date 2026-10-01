@@ -5,7 +5,7 @@ import AlarmStatusBadge from "@/features/alarms/AlarmStatusBadge";
 import AlarmStatusForm from "@/features/alarms/AlarmStatusForm";
 import { updateAlarmStatus } from "@/features/alarms/actions";
 import { getAlarm } from "@/features/alarms/queries";
-import { canUpdateAlarm, nextStatuses } from "@/features/alarms/status";
+import { alarmReadOnlyMessage, nextStatuses } from "@/features/alarms/status";
 import { isWorkerRole } from "@/features/auth/roles";
 import { requireUser } from "@/features/auth/session";
 import { formatDateTime } from "@/lib/format";
@@ -38,7 +38,7 @@ export default async function AlarmPage({ params }: PageProps<"/alarms/[id]">) {
     ["Last updated", formatDateTime(alarm.updated_at)],
   ];
 
-  const editable = canUpdateAlarm(alarm.status, user.role);
+  const readOnlyMessage = alarmReadOnlyMessage(alarm.status, user.role);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
@@ -97,7 +97,7 @@ export default async function AlarmPage({ params }: PageProps<"/alarms/[id]">) {
 
       <section className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
         <h2 className="text-lg font-semibold">Status and notes</h2>
-        {editable ? (
+        {readOnlyMessage === null ? (
           <AlarmStatusForm
             // The id comes from the server, not from a hidden form field.
             action={updateAlarmStatus.bind(null, alarm.id)}
@@ -118,9 +118,7 @@ export default async function AlarmPage({ params }: PageProps<"/alarms/[id]">) {
                 <dd className="whitespace-pre-line">{alarm.action_taken || "–"}</dd>
               </div>
             </dl>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              This alarm is closed. Only an admin can reopen it.
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{readOnlyMessage}</p>
           </>
         )}
       </section>
