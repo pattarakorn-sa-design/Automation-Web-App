@@ -4,6 +4,16 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Manual test checklist (`docs/TEST_CHECKLIST.md`)
+
+- Each main table has three result columns: **A** (Admin), **T** (Technician) and **V** (Viewer). Use `-` for a role the
+  case does not apply to. Add a new case to every table that has the role it affects, and keep the IDs unique.
+- Test records on Vercel cannot be cleaned up: alarms have no delete, and a machine with an alarm or maintenance record cannot
+  be deleted. Use a dedicated test machine (`TST-001`) and `TST-` alarm codes, close what you create, and run the Dashboard
+  count case (TC-DSH-01) before creating test data. The steps are in Notes item 4 of the checklist.
+- The date range cases need alarms at 23:30 and 00:30 Bangkok time on consecutive days, because that is where a filter that
+  uses UTC days goes wrong. Occurred At is typed in Bangkok time.
+
 ## Viewer role (plan 9.3, REQ-AUTH-08)
 
 - `app_role` has a third value, `viewer`: read-only. Viewers see every page other signed-in users
