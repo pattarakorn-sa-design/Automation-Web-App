@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+/* Dark mode is the `dark` class on <html>, set by the script in app/layout.tsx
+   and the ThemeToggle button, not by prefers-color-scheme directly. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Makes native controls (select lists, date pickers, scrollbars) match. */
+  color-scheme: light;
 }
 
 @theme inline {
@@ -12,11 +18,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
 body {
