@@ -79,15 +79,29 @@ npm ci
 
    | ตัวแปร | ความหมาย |
    |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL จาก Supabase Dashboard > Project Settings > API |
-   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (ปลอดภัยที่จะอยู่ในเบราว์เซอร์ เพราะสิทธิ์ถูกจำกัดด้วย RLS) |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL อยู่ที่หน้า Project Overview ใน Supabase Dashboard |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key อยู่ที่ Project Settings > API Keys (ปลอดภัยที่จะอยู่ในเบราว์เซอร์ เพราะสิทธิ์ถูกจำกัดด้วย RLS) |
    | `SUPABASE_SECRET_KEY` | ใช้ฝั่ง Server เท่านั้น ข้าม RLS ได้ **ห้ามขึ้นต้นด้วย `NEXT_PUBLIC_` และห้าม commit** |
 
    `.env.local` ถูกกันไว้ใน `.gitignore` อยู่แล้ว
 
-2. ตั้งค่า Database ด้วยไฟล์ใน `supabase/`
-   <!-- TODO(11.1): เพิ่มขั้นตอนรัน migration และ seed.sql หลัง feat/db-schema และ chore/seed-data ถูก merge -->
-   _(ขั้นตอนนี้จะเพิ่มเมื่อไฟล์ migration และ seed ถูก merge เข้า `main`)_
+2. ตั้งค่า Database ใน Supabase (ทำครั้งเดียวต่อ project)
+
+   - **รัน migration:** Supabase Dashboard > SQL Editor เปิดไฟล์ใน `supabase/migrations/` ทีละไฟล์
+     **ตามลำดับชื่อไฟล์** (15 ไฟล์ ตั้งแต่ `20260929031200_...` ถึง `20260929052900_...`) วางเนื้อหาแล้วกด Run
+     ให้ครบทุกไฟล์ ห้ามแก้ไฟล์ที่รันไปแล้ว ถ้าต้องเปลี่ยน schema ให้เพิ่มไฟล์ migration ใหม่
+   - **ปิดการสมัครเอง:** Authentication > Sign In / Providers ปิด "Allow new users to sign up"
+     ระบบไม่มีหน้าสมัคร บัญชีสร้างโดยเจ้าของ project เท่านั้น
+   - **สร้างผู้ใช้:** Authentication > Users > Add user ใส่ Email และรหัสผ่าน
+     (ถ้ามีตัวเลือก Auto Confirm User ให้เปิด เพื่อให้ Login ได้ทันที) ระบบสร้างโปรไฟล์ให้อัตโนมัติ
+     โดยเริ่มต้นเป็น `technician`
+   - **ตั้ง Admin คนแรก:** Table Editor > `profiles` แก้ `role` ของผู้ใช้นั้นเป็น `admin`
+     หลังจากนั้น Admin เปลี่ยน Role ของคนอื่นได้ที่หน้า Users
+   - **ข้อมูลตัวอย่าง (ไม่บังคับ):** SQL Editor รัน `supabase/seed.sql` ต้องมีผู้ใช้อย่างน้อย 1 คนก่อน
+     ได้เครื่องจักร 10 เครื่อง, Alarm 9 รายการ และงานซ่อม 8 รายการ รันซ้ำได้โดยไม่ซ้ำข้อมูล
+
+   ไฟล์ `types/database.ts` มีอยู่ใน repo แล้ว ไม่ต้องสร้างเอง (สร้างใหม่ด้วย `npm run db:types`
+   ได้เฉพาะผู้มีสิทธิ์ใน Supabase project ที่ผูกไว้ ดูรายละเอียดใน [docs/NOTES.md](docs/NOTES.md))
 
 3. รันเซิร์ฟเวอร์สำหรับพัฒนา
 
@@ -124,11 +138,16 @@ docs/                เอกสารความต้องการแล�
 
 ## Vercel URL
 
-<!-- TODO(11.1): ใส่ URL จริงหลัง deploy บน Vercel (งาน 1.7 และ 8.x) -->
-_(ใส่ URL หลัง deploy)_
+<https://automation-web-app.vercel.app>
 
 ## การใช้ AI
 
-<!-- TODO(11.5): สรุปสั้นๆ หลังเขียนรายงานเสร็จ -->
-รายละเอียดว่าใช้ AI ทำอะไร ส่วนไหน และตรวจสอบผลอย่างไร จะอยู่ในรายงานการใช้ AI
-_(ลิงก์ไปยังรายงานจะเพิ่มเมื่อเขียนเสร็จ)_
+ทั้งสองคนใช้ AI coding assistant (Claude Code) ช่วยพัฒนา โดยมีกฎการใช้อยู่ใน `AGENTS.md`
+
+- **ใช้ทำอะไร:** ตั้ง CI และ test, สร้าง component และตกแต่งหน้าจอ, เขียนเอกสาร (ฝั่ง Phakkathima) และ
+  Database schema, RLS, Auth และ Server Action (ฝั่ง Pattarakorn)
+- **ตรวจผลอย่างไร:** รัน lint, tsc, build และ test ก่อน commit ทุกครั้ง, GitHub Actions บนทุก Pull Request,
+  อีกคนในทีมรีวิวและเป็นคน merge และทดสอบสิทธิ์ของ Admin กับ Technician กับ Database
+- **ปัญหาที่พบ:** เช่น บั๊กของ ConfirmDialog ที่เจอตอนรีวิว ทั้งที่การตรวจอัตโนมัติผ่านหมด
+
+รายละเอียดทั้งหมด พร้อมตารางว่า AI ทำอะไรและคนตัดสินใจอะไร อยู่ใน [รายงานการใช้ AI](docs/AI_REPORT.md)
