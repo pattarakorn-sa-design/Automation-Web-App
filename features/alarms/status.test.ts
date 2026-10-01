@@ -50,3 +50,17 @@ describe("canUpdateAlarm", () => {
     expect(canUpdateAlarm("Open", "technician")).toBe(true);
   });
 });
+
+describe("viewer (REQ-AUTH-08)", () => {
+  it("gets no status choices and cannot update any alarm", () => {
+    for (const status of ["Open", "In Progress", "Closed"] as const) {
+      expect(nextStatuses(status, "viewer")).toEqual([]);
+      expect(canUpdateAlarm(status, "viewer")).toBe(false);
+    }
+  });
+
+  it("cannot change a status, not even keep the same one", () => {
+    expect(canChangeStatus("Open", "In Progress", "viewer")).toBe(false);
+    expect(canChangeStatus("Open", "Open", "viewer")).toBe(false);
+  });
+});
