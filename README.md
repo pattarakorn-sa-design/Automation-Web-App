@@ -5,6 +5,17 @@
 
 พัฒนาเป็นโปรเจ็คของนักศึกษา 2 คน รายละเอียดความต้องการทั้งหมดอยู่ที่ [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 
+**เว็บที่ใช้งานได้จริง:** <https://automation-web-app.vercel.app>
+
+## สารบัญ
+
+- [วัตถุประสงค์](#วัตถุประสงค์)
+- [Function หลัก](#function-หลัก) และ [Technology](#technology)
+- [Database Structure](#database-structure)
+- [วิธีติดตั้งและใช้งาน](#วิธีติดตั้งและใช้งาน)
+- [Vercel URL](#vercel-url)
+- [การใช้ AI](#การใช้-ai)
+
 ## วัตถุประสงค์
 
 ข้อมูล Alarm และงานซ่อมในโรงงานมักกระจายอยู่ในกระดาษ, Excel และแชท ทำให้ค้นประวัติยาก ติดตามสถานะงานไม่ชัด
