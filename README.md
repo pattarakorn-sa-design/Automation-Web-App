@@ -11,6 +11,7 @@
 
 - [วัตถุประสงค์](#วัตถุประสงค์)
 - [Function หลัก](#function-หลัก) และ [Technology](#technology)
+- [Screenshots](#screenshots)
 - [Database Structure](#database-structure)
 - [วิธีติดตั้งและใช้งาน](#วิธีติดตั้งและใช้งาน)
 - [Vercel URL](#vercel-url)
@@ -71,6 +72,25 @@ Viewer ใช้กับผู้ที่ต้องดูภาพรวม�
 | Testing | Vitest |
 | CI | GitHub Actions (lint, build, test) |
 | Hosting | Vercel |
+
+## Screenshots
+
+รูปด้านล่างถ่ายจากแอปที่รันในเครื่องด้วยข้อมูลตัวอย่างชุดเดียวกับ `supabase/seed.sql` (ชื่อบัญชีและอีเมลเป็นข้อมูลสมมติ) ไม่ได้ถ่ายจาก Database จริงบน Vercel
+ทุกรูปมีทั้งโหมด Light และ Dark รูปทั้งหมด (ทุกหน้า, จอ 1280 px และ 360 px, มุมมองของ Technician และ Viewer) อยู่ในโฟลเดอร์ [docs/screenshots/](docs/screenshots/)
+
+| หน้า | Light | Dark |
+|---|---|---|
+| Login | <img src="docs/screenshots/login-light.png" alt="login (light)" width="420"> | <img src="docs/screenshots/login-dark.png" alt="login (dark)" width="420"> |
+| Dashboard | <img src="docs/screenshots/dashboard-light.png" alt="dashboard (light)" width="420"> | <img src="docs/screenshots/dashboard-dark.png" alt="dashboard (dark)" width="420"> |
+| Machines | <img src="docs/screenshots/machines-light.png" alt="machines (light)" width="420"> | <img src="docs/screenshots/machines-dark.png" alt="machines (dark)" width="420"> |
+| Alarms (กรองสถานะ Open) | <img src="docs/screenshots/alarms-filtered-light.png" alt="alarms-filtered (light)" width="420"> | <img src="docs/screenshots/alarms-filtered-dark.png" alt="alarms-filtered (dark)" width="420"> |
+| รายละเอียด Alarm และฟอร์มเปลี่ยนสถานะ | <img src="docs/screenshots/alarm-detail-open-light.png" alt="alarm-detail-open (light)" width="420"> | <img src="docs/screenshots/alarm-detail-open-dark.png" alt="alarm-detail-open (dark)" width="420"> |
+| Maintenance | <img src="docs/screenshots/maintenance-light.png" alt="maintenance (light)" width="420"> | <img src="docs/screenshots/maintenance-dark.png" alt="maintenance (dark)" width="420"> |
+| ฟอร์มแสดง Error ใต้ช่องที่ผิด | <img src="docs/screenshots/machine-new-errors-light.png" alt="machine-new-errors (light)" width="420"> | <img src="docs/screenshots/machine-new-errors-dark.png" alt="machine-new-errors (dark)" width="420"> |
+| Users (Admin) | <img src="docs/screenshots/users-light.png" alt="users (light)" width="420"> | <img src="docs/screenshots/users-dark.png" alt="users (dark)" width="420"> |
+| Viewer ถูกปฏิเสธเมื่อเปิดหน้าที่ไม่มีสิทธิ์ | <img src="docs/screenshots/viewer-forbidden-light.png" alt="viewer-forbidden (light)" width="420"> | <img src="docs/screenshots/viewer-forbidden-dark.png" alt="viewer-forbidden (dark)" width="420"> |
+| จอ 360 px: รายการ Alarm เป็นการ์ด | <img src="docs/screenshots/alarms-mobile-light.png" alt="alarms-mobile (light)" width="240"> | <img src="docs/screenshots/alarms-mobile-dark.png" alt="alarms-mobile (dark)" width="240"> |
+| จอ 360 px: เมนูที่พับ | <img src="docs/screenshots/menu-mobile-light.png" alt="menu-mobile (light)" width="240"> | <img src="docs/screenshots/menu-mobile-dark.png" alt="menu-mobile (dark)" width="240"> |
 
 ## Database Structure
 
