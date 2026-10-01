@@ -9,6 +9,11 @@ Keep entries short, in English, and do not mention AI tools.
 - Status rules live in `features/alarms/status.ts` (`nextStatuses`, `canChangeStatus`,
   `canUpdateAlarm`) and mirror the database trigger. If a rule changes, change both, or the page
   will offer an option the database then refuses (shown as "เปลี่ยนสถานะนี้ไม่ได้ ...").
+- One SQLSTATE can have several causes, so `features/alarms/errors.ts` also reads the constraint
+  name or the trigger's text in `error.message` (e.g. `23503` from
+  `maintenance_records_alarm_same_machine_fkey` means linked maintenance keeps the alarm on its
+  machine, not that the machine is missing). When adding a constraint or a trigger message, add
+  its case there with a test.
 - Two forms: `AlarmDetailsForm` (admin: machine, code, description, time, cause) on `/alarms/new`
   and `/alarms/[id]/edit`, and `AlarmStatusForm` (admin and technician: status, cause, action
   taken) on `/alarms/[id]`. Technicians see a closed alarm read-only.
