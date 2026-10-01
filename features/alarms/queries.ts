@@ -34,6 +34,31 @@ export async function listAlarms(filters: AlarmFilters) {
 
 export type AlarmListItem = Awaited<ReturnType<typeof listAlarms>>["alarms"][number];
 
+// Recent alarms as choices for the "caused by alarm" field of a maintenance
+// record. The form only shows the ones of the selected machine. Pass the
+// alarm already linked to a record so it stays selectable when it is older.
+export async function listAlarmOptions(includeId?: string | null) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("alarms")
+    .select("id, machine_id, alarm_code, occurred_at, status")
+    .order("occurred_at", { ascending: false })
+    .limit(200);
+  if (error) throw new Error(`listAlarmOptions failed: ${error.message}`);
+
+  if (includeId && !data.some((alarm) => alarm.id === includeId)) {
+    const { data: linked } = await supabase
+      .from("alarms")
+      .select("id, machine_id, alarm_code, occurred_at, status")
+      .eq("id", includeId)
+      .maybeSingle();
+    if (linked) data.push(linked);
+  }
+  return data;
+}
+
+export type AlarmOption = Awaited<ReturnType<typeof listAlarmOptions>>[number];
+
 // One alarm with its machine and the names of who created and closed it.
 // Null when the id is not a valid uuid or no row exists.
 export async function getAlarm(id: string) {

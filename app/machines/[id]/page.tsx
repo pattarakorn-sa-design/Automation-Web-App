@@ -44,26 +44,35 @@ export default async function MachinePage({ params }: PageProps<"/machines/[id]"
           <StatusBadge status={machine.status} className="self-start" />
         </div>
 
-        {user.role === "admin" ? (
-          <div className="flex flex-wrap items-start gap-2">
-            <Link
-              href={`/alarms/new?machine=${machine.id}`}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              New alarm
-            </Link>
-            <Link
-              href={`/machines/${machine.id}/edit`}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              Edit
-            </Link>
-            <DeleteMachineButton
-              machineId={machine.id}
-              machineCode={machine.machine_code}
-            />
-          </div>
-        ) : null}
+        <div className="flex flex-wrap items-start gap-2">
+          {/* Admins and technicians both record maintenance (REQ-MNT-01). */}
+          <Link
+            href={`/maintenance/new?machine=${machine.id}`}
+            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+          >
+            New maintenance
+          </Link>
+          {user.role === "admin" ? (
+            <>
+              <Link
+                href={`/alarms/new?machine=${machine.id}`}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+              >
+                New alarm
+              </Link>
+              <Link
+                href={`/machines/${machine.id}/edit`}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+              >
+                Edit
+              </Link>
+              <DeleteMachineButton
+                machineId={machine.id}
+                machineCode={machine.machine_code}
+              />
+            </>
+          ) : null}
+        </div>
       </div>
 
       <dl className="grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 sm:grid-cols-2 dark:border-gray-800">
