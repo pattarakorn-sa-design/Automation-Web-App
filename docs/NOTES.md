@@ -18,6 +18,10 @@ Keep entries short, in English, and do not mention AI tools.
   (label and count together, with a hover background)
   to the matching list with its filter in the URL, e.g. `/alarms?status=Open`. Keep the whole row
   clickable when restyling: a link on only the number or only the label was easy to miss. The Logout, Profile and Users links live only in the navbar.
+- Every status row in the three cards uses the coloured badge of its list (`StatusBadge`,
+  `AlarmStatusBadge`, `MaintenanceStatusBadge`), so the cards read the same way and the rows line up
+  across them. A plain-text label looked like a different kind of row next to the machine badges.
+  The dashboard was checked at 360, 768 and 1280 px and in dark mode, with four-digit counts too.
 
 ## Maintenance (`features/maintenance/`, `app/maintenance/`)
 

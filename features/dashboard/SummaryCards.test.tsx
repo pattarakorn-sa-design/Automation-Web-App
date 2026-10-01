@@ -38,10 +38,27 @@ describe("SummaryCards", () => {
   it("makes the whole row the link in every card, label and count together", () => {
     // Machine row: badge and count inside one link.
     expect(html).toMatch(/<a [^>]*href="\/machines\?status=Stop"[^>]*>.*?Stop<\/span>.*?>2<\/span><\/a>/);
-    // Alarm row: label and count inside one link.
-    expect(html).toMatch(/<a [^>]*href="\/alarms\?status=Open"[^>]*>Open<span[^>]*>3<\/span><\/a>/);
+    // Alarm row: badge and count inside one link.
+    expect(html).toMatch(/<a [^>]*href="\/alarms\?status=Open"[^>]*>.*?Open<\/span>.*?>3<\/span><\/a>/);
     // Ten status rows in total (4 machine, 3 alarm, 3 maintenance).
     expect(html.match(/<li><a /g)).toHaveLength(10);
+  });
+
+  // The alarm and maintenance rows use the same coloured badges as their lists
+  // and as the machine card, so every card reads the same way.
+  it.each([
+    ["/alarms?status=Open", "bg-red-100"],
+    ["/alarms?status=In+Progress", "bg-yellow-100"],
+    ["/alarms?status=Closed", "bg-green-100"],
+    ["/maintenance?status=Pending", "bg-gray-100"],
+    ["/maintenance?status=In+Progress", "bg-yellow-100"],
+    ["/maintenance?status=Completed", "bg-green-100"],
+  ])("shows the row for %s as a %s badge", (href, colour) => {
+    const row = new RegExp(
+      `<a [^>]*href="${href.replace(/[?+]/g, "\\$&")}"[^>]*>(?:(?!</a>).)*${colour}`,
+    );
+
+    expect(html).toMatch(row);
   });
 });
 
