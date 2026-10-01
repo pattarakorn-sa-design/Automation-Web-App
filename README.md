@@ -5,6 +5,17 @@
 
 พัฒนาเป็นโปรเจ็คของนักศึกษา 2 คน รายละเอียดความต้องการทั้งหมดอยู่ที่ [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 
+**เว็บที่ใช้งานได้จริง:** <https://automation-web-app.vercel.app>
+
+## สารบัญ
+
+- [วัตถุประสงค์](#วัตถุประสงค์)
+- [Function หลัก](#function-หลัก) และ [Technology](#technology)
+- [Database Structure](#database-structure)
+- [วิธีติดตั้งและใช้งาน](#วิธีติดตั้งและใช้งาน)
+- [Vercel URL](#vercel-url)
+- [การใช้ AI](#การใช้-ai)
+
 ## วัตถุประสงค์
 
 ข้อมูล Alarm และงานซ่อมในโรงงานมักกระจายอยู่ในกระดาษ, Excel และแชท ทำให้ค้นประวัติยาก ติดตามสถานะงานไม่ชัด
@@ -54,11 +65,100 @@
 
 ## Database Structure
 
-<!-- TODO(11.2): Pattarakorn เขียนร่างตารางและความสัมพันธ์จาก migration จริง แล้ว Phakkathima จัดหน้า -->
-_(รอสรุปโครงสร้างตารางและความสัมพันธ์จาก schema จริงหลัง migration ถูก merge)_
+ฐานข้อมูลเป็น PostgreSQL บน Supabase มี 4 ตารางใน schema `public` สร้างจากไฟล์ใน
+[`supabase/migrations/`](supabase/migrations/) และเปิด Row Level Security (RLS) ทุกตาราง
 
-ตารางที่ออกแบบไว้ตามความต้องการ ได้แก่ `profiles`, `machines`, `alarms` และ `maintenance_records`
-รายละเอียดฟิลด์ตามแบบร่างอยู่ในหัวข้อ 9 ของ [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
+### ความสัมพันธ์
+
+```mermaid
+erDiagram
+    AUTH_USERS ||--|| PROFILES : "1:1"
+    MACHINES ||--o{ ALARMS : "มี"
+    MACHINES ||--o{ MAINTENANCE_RECORDS : "มี"
+    ALARMS |o--o{ MAINTENANCE_RECORDS : "เป็นต้นเหตุของ"
+    PROFILES ||--o{ MAINTENANCE_RECORDS : "รับผิดชอบ (technician_id)"
+    PROFILES |o--o{ ALARMS : "สร้าง / ปิด"
+```
+
+- `profiles` 1:1 กับ `auth.users` ของ Supabase Auth สร้างอัตโนมัติด้วย trigger เมื่อเพิ่มผู้ใช้ และลบตามเมื่อลบผู้ใช้
+- `machines` 1:N `alarms` และ 1:N `maintenance_records` ลบเครื่องที่ยังมี Alarm หรืองานซ่อมไม่ได้ (`on delete restrict`)
+- `maintenance_records` อ้าง Alarm ต้นเหตุได้ (ไม่บังคับ) ผ่าน foreign key คู่ `(alarm_id, machine_id)`
+  จึงอ้างได้เฉพาะ Alarm ของเครื่องเดียวกัน (BR-MNT-03)
+- `alarms.created_by`, `alarms.closed_by` และ `maintenance_records.created_by` ชี้ไปที่ `profiles` เพื่อบอกว่าใครทำ
+
+### ตาราง
+
+**`profiles`** — ชื่อและ Role ของผู้ใช้แต่ละคน
+
+| คอลัมน์ | ชนิด | เงื่อนไข |
+|---|---|---|
+| `id` | uuid | PK, FK → `auth.users.id` |
+| `full_name` | text | 1–100 ตัวอักษร |
+| `role` | `app_role` | `admin` / `technician` ค่าเริ่มต้น `technician` |
+| `created_at`, `updated_at` | timestamptz | อัปเดต `updated_at` อัตโนมัติ |
+
+**`machines`** — ข้อมูลหลักของเครื่องจักร
+
+| คอลัมน์ | ชนิด | เงื่อนไข |
+|---|---|---|
+| `id` | uuid | PK |
+| `machine_code` | text | Machine ID ที่ผู้ใช้เห็น ห้ามซ้ำ รูปแบบ `^[A-Z]{1,4}-[0-9]{3,5}$` เช่น `M-001` |
+| `name` | text | 1–100 ตัวอักษร |
+| `type` | text | 1–50 ตัวอักษร |
+| `location` | text | 1–100 ตัวอักษร |
+| `status` | `machine_status` | `Running` / `Stop` / `Alarm` / `Maintenance` |
+| `created_at`, `updated_at` | timestamptz | |
+
+**`alarms`** — Alarm ของเครื่องจักร ไม่มีการลบ
+
+| คอลัมน์ | ชนิด | เงื่อนไข |
+|---|---|---|
+| `id` | uuid | PK |
+| `machine_id` | uuid | FK → `machines.id` |
+| `alarm_code` | text | รูปแบบ `^[A-Z0-9-]{2,20}$` เช่น `E-101` |
+| `description` | text | 1–500 ตัวอักษร |
+| `occurred_at` | timestamptz | ห้ามอยู่ในอนาคต (เผื่อ 5 นาที) |
+| `cause` | text | ไม่บังคับ ≤ 500 ตัวอักษร |
+| `action_taken` | text | ไม่บังคับ ≤ 1000 ตัวอักษร |
+| `status` | `alarm_status` | `Open` / `In Progress` / `Closed` ค่าเริ่มต้น `Open` |
+| `created_by` | uuid | FK → `profiles.id` ผู้สร้าง |
+| `closed_by`, `closed_at` | uuid, timestamptz | ผู้ปิดและเวลาที่ปิด ใส่โดย trigger |
+| `created_at`, `updated_at` | timestamptz | |
+
+**`maintenance_records`** — งานซ่อมบำรุง ไม่มีการลบ
+
+| คอลัมน์ | ชนิด | เงื่อนไข |
+|---|---|---|
+| `id` | uuid | PK |
+| `machine_id` | uuid | FK → `machines.id` |
+| `alarm_id` | uuid | ไม่บังคับ FK คู่ `(alarm_id, machine_id)` → `alarms` |
+| `technician_id` | uuid | FK → `profiles.id` Technician ผู้รับผิดชอบ |
+| `type` | `maintenance_type` | `Corrective` (ซ่อมเมื่อเสีย) / `Preventive` (บำรุงรักษาตามรอบ) |
+| `problem` | text | 1–1000 ตัวอักษร |
+| `action_taken` | text | ไม่บังคับ ≤ 1000 ตัวอักษร |
+| `status` | `maintenance_status` | `Pending` / `In Progress` / `Completed` ค่าเริ่มต้น `Pending` |
+| `start_date`, `end_date` | date | `end_date` ไม่บังคับ และต้องไม่ก่อน `start_date` |
+| `created_by` | uuid | FK → `profiles.id` ผู้บันทึก แก้ภายหลังไม่ได้ |
+| `created_at`, `updated_at` | timestamptz | |
+
+### กฎที่ฐานข้อมูลบังคับเอง
+
+นอกจากการตรวจในฟอร์มและ Server Action แล้ว ฐานข้อมูลบังคับกฎสำคัญซ้ำอีกชั้น
+จึงเลี่ยงไม่ได้แม้เรียก API ของ Supabase โดยตรง
+
+| กฎ | บังคับด้วย |
+|---|---|
+| Machine ID ห้ามซ้ำ (REQ-MCH-03) | `unique` + `check` ตัวพิมพ์ใหญ่ |
+| ปิด Alarm ต้องมี Cause และ Action Taken (BR-ALM-03) | check `alarms_closed_requires_details` |
+| ลำดับสถานะ Alarm และ Technician แก้ Alarm ที่ปิดแล้วไม่ได้ (BR-ALM-01, 02) | trigger `enforce_alarm_update_rules` |
+| บันทึกผู้ปิดและเวลาที่ปิด ล้างเมื่อเปิดใหม่ (BR-ALM-04) | trigger `enforce_alarm_update_rules` |
+| งานซ่อม Completed ต้องมี Action Taken และวันจบ (BR-MNT-02) | check `maintenance_records_completed_requires_details` |
+| Alarm ที่อ้างต้องเป็นของเครื่องเดียวกับงานซ่อม (BR-MNT-03) | foreign key คู่ `maintenance_records_alarm_same_machine_fkey` |
+| ห้ามเปลี่ยน Role ของตัวเอง (REQ-AUTH-07) | trigger `prevent_self_role_change` |
+| ใครอ่านและแก้อะไรได้ตาม Role | RLS policy ทุกตาราง (ดูตาราง "Role และสิทธิ์โดยสรุป" ด้านบน) |
+
+ฟังก์ชันที่ใช้ร่วม: `current_user_role()` คืน Role ของผู้ใช้ที่ login ใช้ใน RLS policy
+และ `admin_list_users()` คืนรายชื่อผู้ใช้พร้อมอีเมลให้เฉพาะ Admin (หน้า Users)
 
 ## วิธีติดตั้งและใช้งาน
 
