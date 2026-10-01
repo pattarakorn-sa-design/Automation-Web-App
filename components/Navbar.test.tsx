@@ -53,6 +53,15 @@ describe("Navbar", () => {
     expect(html).toMatch(/<a aria-current="page"[^>]*href="\/alarms"/);
   });
 
+  it("has the theme button for every role, next to Logout (plan 9.5)", () => {
+    for (const role of ["admin", "technician"] as const) {
+      const html = render(role);
+
+      expect(html).toContain('aria-label="Theme: System. Switch to Light"');
+      expect(html.indexOf("Theme: System")).toBeLessThan(html.indexOf(">Logout<"));
+    }
+  });
+
   it("starts with the mobile menu folded", () => {
     const html = render("admin");
 
