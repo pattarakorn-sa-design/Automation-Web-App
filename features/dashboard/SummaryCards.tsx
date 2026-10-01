@@ -1,12 +1,37 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import StatusBadge from "@/components/StatusBadge";
 import type { DashboardSummary } from "./summary";
 
 const cardClass =
   "flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800";
 
-// Summary cards (REQ-DSH-01 to REQ-DSH-04). Each card links to the list it
-// counts, filtered where that helps.
+// One status line. The whole row is the link, with a hover background, so it
+// is clear that it can be clicked and every card behaves the same way.
+function StatusRow({
+  href,
+  label,
+  count,
+}: {
+  href: string;
+  label: ReactNode;
+  count: number;
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="-mx-2 flex items-center justify-between gap-3 rounded-md px-2 py-1 text-sm hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-blue-600 dark:hover:bg-gray-800"
+      >
+        {label}
+        <span className="font-medium tabular-nums">{count}</span>
+      </Link>
+    </li>
+  );
+}
+
+// Summary cards (REQ-DSH-01 to REQ-DSH-04). Each status row links to the list
+// it counts, filtered by that status.
 export default function SummaryCards({ summary }: { summary: DashboardSummary }) {
   const { machines, alarms, maintenance } = summary;
 
@@ -16,21 +41,18 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
         <h2 id="card-machines" className="text-sm font-medium text-gray-600 dark:text-gray-400">
           Machines
         </h2>
-        <Link href="/machines" className="text-3xl font-semibold hover:underline">
+        <p className="text-3xl font-semibold">
           {machines.total}
-          <span className="sr-only"> machines in total</span>
-        </Link>
-        <ul className="flex flex-col gap-2">
+          <span className="text-base font-normal text-gray-600 dark:text-gray-400"> in total</span>
+        </p>
+        <ul className="flex flex-col gap-1">
           {Object.entries(machines.byStatus).map(([status, count]) => (
-            <li key={status} className="flex items-center justify-between gap-3">
-              <StatusBadge status={status as keyof typeof machines.byStatus} />
-              <Link
-                href={`/machines?status=${status}`}
-                className="font-medium tabular-nums hover:underline"
-              >
-                {count}
-              </Link>
-            </li>
+            <StatusRow
+              key={status}
+              href={`/machines?status=${status}`}
+              label={<StatusBadge status={status as keyof typeof machines.byStatus} />}
+              count={count}
+            />
           ))}
         </ul>
       </section>
@@ -46,25 +68,14 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
             of {alarms.total}
           </span>
         </p>
-        <ul className="flex flex-col gap-1 text-sm">
-          <li className="flex justify-between gap-3">
-            <Link href="/alarms?status=Open" className="hover:underline">
-              Open
-            </Link>
-            <span className="tabular-nums">{alarms.byStatus.Open}</span>
-          </li>
-          <li className="flex justify-between gap-3">
-            <Link href="/alarms?status=In+Progress" className="hover:underline">
-              In Progress
-            </Link>
-            <span className="tabular-nums">{alarms.byStatus["In Progress"]}</span>
-          </li>
-          <li className="flex justify-between gap-3">
-            <Link href="/alarms?status=Closed" className="hover:underline">
-              Closed
-            </Link>
-            <span className="tabular-nums">{alarms.byStatus.Closed}</span>
-          </li>
+        <ul className="flex flex-col gap-1">
+          <StatusRow href="/alarms?status=Open" label="Open" count={alarms.byStatus.Open} />
+          <StatusRow
+            href="/alarms?status=In+Progress"
+            label="In Progress"
+            count={alarms.byStatus["In Progress"]}
+          />
+          <StatusRow href="/alarms?status=Closed" label="Closed" count={alarms.byStatus.Closed} />
         </ul>
       </section>
 
@@ -82,25 +93,22 @@ export default function SummaryCards({ summary }: { summary: DashboardSummary })
             of {maintenance.total}
           </span>
         </p>
-        <ul className="flex flex-col gap-1 text-sm">
-          <li className="flex justify-between gap-3">
-            <Link href="/maintenance?status=Pending" className="hover:underline">
-              Pending
-            </Link>
-            <span className="tabular-nums">{maintenance.byStatus.Pending}</span>
-          </li>
-          <li className="flex justify-between gap-3">
-            <Link href="/maintenance?status=In+Progress" className="hover:underline">
-              In Progress
-            </Link>
-            <span className="tabular-nums">{maintenance.byStatus["In Progress"]}</span>
-          </li>
-          <li className="flex justify-between gap-3">
-            <Link href="/maintenance?status=Completed" className="hover:underline">
-              Completed
-            </Link>
-            <span className="tabular-nums">{maintenance.byStatus.Completed}</span>
-          </li>
+        <ul className="flex flex-col gap-1">
+          <StatusRow
+            href="/maintenance?status=Pending"
+            label="Pending"
+            count={maintenance.byStatus.Pending}
+          />
+          <StatusRow
+            href="/maintenance?status=In+Progress"
+            label="In Progress"
+            count={maintenance.byStatus["In Progress"]}
+          />
+          <StatusRow
+            href="/maintenance?status=Completed"
+            label="Completed"
+            count={maintenance.byStatus.Completed}
+          />
         </ul>
       </section>
     </div>

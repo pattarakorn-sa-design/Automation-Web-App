@@ -14,7 +14,7 @@ describe("SummaryCards", () => {
   const html = renderToStaticMarkup(<SummaryCards summary={summary} />);
 
   it("shows the totals the requirements ask for (TC-DSH-01 to 03)", () => {
-    expect(html).toContain(">10<");
+    expect(html).toMatch(/>10<span[^>]*> in total<\/span>/);
     expect(html).toMatch(/>5<span[^>]*> of 9<\/span>/);
     expect(html).toMatch(/>4<span[^>]*> of 8<\/span>/);
   });
@@ -27,6 +27,15 @@ describe("SummaryCards", () => {
   it("links alarm and maintenance statuses with spaces encoded", () => {
     expect(html).toContain('href="/alarms?status=In+Progress"');
     expect(html).toContain('href="/maintenance?status=Completed"');
+  });
+
+  it("makes the whole row the link in every card, label and count together", () => {
+    // Machine row: badge and count inside one link.
+    expect(html).toMatch(/<a [^>]*href="\/machines\?status=Stop"[^>]*>.*?Stop<\/span>.*?>2<\/span><\/a>/);
+    // Alarm row: label and count inside one link.
+    expect(html).toMatch(/<a [^>]*href="\/alarms\?status=Open"[^>]*>Open<span[^>]*>3<\/span><\/a>/);
+    // Ten status rows in total (4 machine, 3 alarm, 3 maintenance).
+    expect(html.match(/<li><a /g)).toHaveLength(10);
   });
 });
 
