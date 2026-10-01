@@ -34,6 +34,10 @@ Keep entries short, in English, and do not mention AI tools.
 - Two forms: `AlarmDetailsForm` (admin: machine, code, description, time, cause) on `/alarms/new`
   and `/alarms/[id]/edit`, and `AlarmStatusForm` (admin and technician: status, cause, action
   taken) on `/alarms/[id]`. Technicians see a closed alarm read-only.
+- `AlarmTable` uses the same card-plus-table pattern as `MachineTable`, but switches to the table at
+  `lg` (1024 px), not `md`: with the description column the table was wider than 768 px and cut off
+  the status badge. Between 768 and 1023 px the cards sit in two columns. Choose the breakpoint
+  by looking at the widest column set, not by copying the machine list.
 - `<input type="datetime-local">` has no time zone. Values are read and written as Bangkok time
   with `toBangkokInputValue()` / `fromBangkokInputValue()` in `lib/format.ts`, because the server
   (Vercel) runs in UTC. Never pass a datetime-local string straight to `new Date()`.

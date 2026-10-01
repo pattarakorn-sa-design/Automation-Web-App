@@ -4,8 +4,10 @@ import type { MachineOption } from "@/features/machines/queries";
 import { hasActiveAlarmFilters, type AlarmFilters as Filters } from "./filters";
 import { ALARM_STATUSES } from "./status";
 
+// h-10 on every control and button keeps the selects, the search box and the
+// buttons the same height, so they line up in one row.
 const controlClass =
-  "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:outline-2 focus:outline-offset-0 focus:outline-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100";
+  "h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 shadow-sm focus:outline-2 focus:outline-offset-0 focus:outline-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100";
 
 // REQ-SRC-02: filter by machine, status and alarm code. Values are kept in
 // the URL (REQ-SRC-05); submitting always returns to page 1.
@@ -20,9 +22,9 @@ export default function AlarmFilters({
     <Form
       action="/alarms"
       role="search"
-      className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end"
+      className="grid grid-cols-2 gap-3 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end"
     >
-      <div className="flex flex-col gap-1.5">
+      <div className="col-span-2 flex flex-col gap-1.5 lg:col-span-1">
         <label htmlFor="filter-machine" className="text-sm font-medium">
           Machine
         </label>
@@ -75,17 +77,17 @@ export default function AlarmFilters({
         />
       </div>
 
-      <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
+      <div className="col-span-2 flex gap-2 lg:col-span-1">
         <button
           type="submit"
-          className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 lg:flex-none"
+          className="h-10 flex-1 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 lg:flex-none"
         >
           Search
         </button>
         {hasActiveAlarmFilters(filters) ? (
           <Link
             href="/alarms"
-            className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 lg:flex-none dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            className="inline-flex h-10 flex-1 items-center justify-center rounded-md border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 lg:flex-none dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             Clear
           </Link>
