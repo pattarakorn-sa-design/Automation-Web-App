@@ -151,7 +151,7 @@ AI ไม่เคยเห็นค่า secret key เพราะไม่�
 | Types จาก Database จริง | ใช้ Supabase CLI สร้าง types แทนการเขียนเอง จึงตรงกับ schema จริงแน่นอน |
 | ตรวจอัตโนมัติและ CI | lint, tsc, test, build ในเครื่อง และ GitHub Actions บนทุก PR |
 | ตรวจ Deploy | เช็คผ่าน GitHub API ว่า Production deployment มาจาก `main` และเปิด URL ได้จริง |
-| Unit test ของกฎธุรกิจ | กฎเปลี่ยนสถานะ Alarm, สิทธิ์แก้ Maintenance, validation ทุกฟอร์ม, การแปลง error และเวลา รวมทั้งโปรเจ็ค 321 test ใน 44 ไฟล์ (นับตอนเตรียมส่งงาน) รันบน CI ทุก PR |
+| Unit test ของกฎธุรกิจ | กฎเปลี่ยนสถานะ Alarm, สิทธิ์แก้ Maintenance, validation ทุกฟอร์ม, การแปลง error และเวลา รวมทั้งโปรเจ็ค 324 test ใน 44 ไฟล์ (นับตอนเตรียมส่งงาน) รันบน CI ทุก PR |
 | ทดสอบในเบราว์เซอร์ทุก PR | ทำตามขั้นตอน "วิธีทดสอบ" ใน PR ด้วยบัญชี Admin และ Technician จริง ที่จอ 360 px และโหมดมืด ก่อนสั่ง push |
 | เพื่อนรีวิวกับ Database จำลอง | เพื่อนรัน migration จริงทั้งหมดบน Postgres ในเครื่อง แล้วทดสอบ RLS, trigger และตัวเลข Dashboard ในฐานะแต่ละ role |
 | ยืนยันกรณีที่ทดสอบผ่านหน้าเว็บยาก | เช่น TC-DSH-06 รัน query ที่ใช้คอลัมน์ผิดด้วย script ชั่วคราว ยืนยันว่า Database ตอบ error `42703` จริง |
