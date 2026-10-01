@@ -18,6 +18,21 @@ Keep entries short, in English, and do not mention AI tools.
   `formatDateTime` so the file shows Bangkok time like the screen.
 - If an export query throws, call `logLoadError("alarms export", error)` (see below) and return
   a 500 response with a Thai message instead of an empty file.
+- The export is built from three layers: `lib/csv.ts` (`toCsv`, `csvResponse`, `csvErrorResponse`,
+  pure and shared), `features/alarms/csv.ts` / `features/maintenance/csv.ts` (which columns, in which
+  format) and the Route Handlers `app/alarms/export/route.ts` / `app/maintenance/export/route.ts`.
+  To add or reorder a column, change the `HEADER` array and the row mapping in the domain's `csv.ts`.
+- `lib/csv.ts` quotes every cell, doubles `"`, puts a `'` before a cell starting with `=`, `+`, `-`,
+  `@`, tab or carriage return (CSV injection), starts the file with a byte order mark so Excel shows
+  Thai, and ends lines with CRLF. A file cut at the row limit is named `...-partial.csv`.
+- The buttons are plain `<a href="/alarms/export?...">` links, not `next/link`: `Link` would try to
+  navigate to a page instead of downloading a file. They carry the current filters and leave out
+  `page`, because an export is not paginated.
+- In a test, `response.text()` removes a leading byte order mark when it decodes. To check the BOM,
+  read the bytes (`new Uint8Array(await response.arrayBuffer())`, first three are `EF BB BF`).
+- Not checked in a real Excel yet: the tests read the file back with an RFC 4180 reader and check
+  the BOM bytes, but opening the downloaded file in Excel (Thai text, a description with a comma and
+  a new line) is still a manual step, TC-BNS-04.
 
 ## Logging load errors (`lib/log.ts`)
 
