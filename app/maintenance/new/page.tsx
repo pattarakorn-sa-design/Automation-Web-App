@@ -23,11 +23,11 @@ export default async function NewMaintenancePage({
   let alarms: Awaited<ReturnType<typeof listAlarmOptions>>;
   let people: Awaited<ReturnType<typeof listProfileOptions>>;
   try {
-    [machines, alarms, people] = await Promise.all([
-      listMachineOptions(),
-      listAlarmOptions(typeof alarm === "string" ? alarm : null),
-      listProfileOptions(),
-    ]);
+    [machines, people] = await Promise.all([listMachineOptions(), listProfileOptions()]);
+    // Alarms of the preselected machine only; the form loads others itself.
+    const preselected =
+      typeof machine === "string" && machines.some((m) => m.id === machine) ? machine : null;
+    alarms = await listAlarmOptions(preselected, typeof alarm === "string" ? alarm : null);
   } catch {
     return (
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8">
