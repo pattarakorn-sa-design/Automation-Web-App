@@ -4,6 +4,30 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Dark mode (plan 9.5, `components/theme.ts`, `components/ThemeToggle.tsx`)
+
+- Dark mode is the `dark` class on `<html>`, not `prefers-color-scheme`. `app/globals.css` has
+  `@custom-variant dark (&:where(.dark, .dark *))`, so every `dark:` class in the app keeps working
+  and follows the class. The CSS variables for the page colours and `color-scheme` are set on `.dark`
+  (`color-scheme` makes native controls such as date pickers and select lists match).
+- The user picks Light, Dark or System with the button in the navbar. The choice is saved in
+  `localStorage` under `theme`; System means "no value" (the button removes the key) and follows the
+  device, also while the page is open.
+- `themeInitScript` (in `theme.ts`) is inlined in `<head>` by `app/layout.tsx` and adds the class
+  before the first paint, so a saved dark theme never shows a white page first. It runs as plain
+  text, so it must not import anything. `<html>` has `suppressHydrationWarning` because the class
+  list differs from what the server rendered. A strict Content Security Policy that blocks inline
+  scripts would break it: add a nonce if one is ever set (see the Next.js CSP guide).
+- Reading `localStorage` throws when site data is blocked. The script and the button both catch it
+  and fall back to the device setting (the button keeps its choice in memory until reload).
+- The button is not on `/login` (the navbar is not shown there). The login page still follows the
+  saved choice or the device.
+- To look at a page in dark mode without changing the device: run
+  `localStorage.setItem("theme", "dark")` in the browser console and reload, or press the button.
+  Do not test dark mode only by flipping the operating system setting any more: a saved choice
+  overrides it.
+- If a new component uses its own colours, give it `dark:` classes like the shared components do.
+
 ## CSV export (plan 9.4, `lib/export.ts`)
 
 - `exportAlarms(filters)` and `exportMaintenance(filters)` in each domain's `queries.ts` return
@@ -249,7 +273,7 @@ Import them instead of writing your own, so every page looks the same.
   - Example: `features/auth/LoginForm.tsx` is built from all three. It wraps the form in `LoginCard`
     (passing `state.formError` as `error`) and keeps A's `useActionState` and zod validation as they
     were, so copy that file as the starting point for new forms.
-- These components have `dark:` classes already, so they follow the OS colour scheme.
+- These components have `dark:` classes already, so they follow the theme (see "Dark mode" at the top).
 
 ## Testing (Vitest)
 
@@ -286,7 +310,8 @@ Import them instead of writing your own, so every page looks the same.
   `app/preview/page.tsx` that renders the components with sample data, and add its path to
   `PUBLIC_PATHS` in `lib/supabase/proxy.ts`. Neither change is ever committed: list the preview folder
   in `.git/info/exclude`, undo the proxy edit, and check `git status` before every commit. A headless
-  Chrome can then take screenshots (emulate `prefers-color-scheme` to see both themes).
+  Chrome can then take screenshots. To see both themes set `localStorage.theme` to `light` or `dark`
+  before loading the page (see "Dark mode" at the top).
 
 ## Next.js 16
 
