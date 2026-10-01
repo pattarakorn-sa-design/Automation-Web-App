@@ -14,6 +14,9 @@ describe("parseMaintenanceFilters", () => {
       machine: undefined,
       status: undefined,
       technician: undefined,
+      from: undefined,
+      to: undefined,
+      invalidRange: false,
       page: 1,
     });
   });
@@ -21,13 +24,24 @@ describe("parseMaintenanceFilters", () => {
   it("reads every filter", () => {
     expect(
       parseMaintenanceFilters({ machine, status: "Completed", technician, page: "2" }),
-    ).toEqual({ machine, status: "Completed", technician, page: 2 });
+    ).toEqual({ machine, status: "Completed", technician, from: undefined, to: undefined, invalidRange: false, page: 2 });
+  });
+
+  it("reads a start date range and marks one that ends before it starts", () => {
+    expect(parseMaintenanceFilters({ from: "2026-09-01", to: "2026-09-30" })).toMatchObject({
+      from: "2026-09-01",
+      to: "2026-09-30",
+      invalidRange: false,
+    });
+    expect(
+      parseMaintenanceFilters({ from: "2026-09-30", to: "2026-09-01" }).invalidRange,
+    ).toBe(true);
   });
 
   it("drops ids that are not uuids and unknown statuses", () => {
     expect(
       parseMaintenanceFilters({ machine: "CNC-001", technician: "me", status: "Done" }),
-    ).toEqual({ machine: undefined, status: undefined, technician: undefined, page: 1 });
+    ).toEqual({ machine: undefined, status: undefined, technician: undefined, from: undefined, to: undefined, invalidRange: false, page: 1 });
   });
 });
 
@@ -42,11 +56,19 @@ describe("maintenanceFiltersQuery", () => {
       `?status=In+Progress&technician=${technician}`,
     );
   });
+
+  it("keeps the date range", () => {
+    const filters = parseMaintenanceFilters({ from: "2026-09-01", to: "2026-09-30" });
+    expect(maintenanceFiltersQuery(filters)).toBe("?from=2026-09-01&to=2026-09-30");
+  });
 });
 
 describe("hasActiveMaintenanceFilters", () => {
   it("ignores the page", () => {
     expect(hasActiveMaintenanceFilters(parseMaintenanceFilters({ page: "3" }))).toBe(false);
     expect(hasActiveMaintenanceFilters(parseMaintenanceFilters({ technician }))).toBe(true);
+    expect(
+      hasActiveMaintenanceFilters(parseMaintenanceFilters({ from: "2026-09-01" })),
+    ).toBe(true);
   });
 });

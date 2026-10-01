@@ -24,6 +24,22 @@ Keep entries short, in English, and do not mention AI tools.
   `auth.users` and `auth.uid()`: a viewer reads machines, alarms and profiles, every write is refused,
   and an admin cannot assign maintenance to a viewer.
 
+## Date range filter (plan 9.2, `lib/dateRange.ts`)
+
+- Alarms filter by the day they occurred, Maintenance by start date. The URL keys are `from` and
+  `to` ("YYYY-MM-DD"), both days included, and the export buttons pass them on, so a CSV covers
+  the same range as the list.
+- `occurred_at` is a timestamp, so a day means a Bangkok day: `timestampBounds()` turns
+  `to=2026-09-30` into `occurred_at < 2026-09-30T17:00Z` (midnight in Bangkok after that day). Do
+  not compare it with the plain date: Vercel runs in UTC and alarms after 17:00 would land on the
+  wrong day. `start_date` is a date column and is compared as it is (`dateBounds()`).
+- A value that is not a real date is dropped like other bad filter values. When `from` is after
+  `to`, both stay in the form, `invalidRange` is true, a Thai message shows under the fields and
+  the list is not filtered by date. Queries must go through `timestampBounds` / `dateBounds`,
+  which return no bounds for an invalid range.
+- On wide screens the filter fields are one row of six columns and Search / Clear sit on their own
+  row; below `lg` the two dates share a row.
+
 ## Dark mode (plan 9.5, `components/theme.ts`, `components/ThemeToggle.tsx`)
 
 - Dark mode is the `dark` class on `<html>`, not `prefers-color-scheme`. `app/globals.css` has
