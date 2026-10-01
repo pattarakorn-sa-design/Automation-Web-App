@@ -14,6 +14,7 @@ import {
 } from "@/features/maintenance/filters";
 import { listMaintenance } from "@/features/maintenance/queries";
 import { listProfileOptions } from "@/features/users/queries";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "Maintenance",
@@ -34,7 +35,8 @@ export default async function MaintenancePage({
       listMachineOptions(),
       listProfileOptions(),
     ]);
-  } catch {
+  } catch (error) {
+    logLoadError("maintenance list", error);
     return (
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <h1 className="mb-6 text-2xl font-semibold">Maintenance</h1>

@@ -16,6 +16,16 @@ Keep entries short, in English, and do not mention AI tools.
 - Rows are read with the signed-in user's client, so RLS still applies. Call `requireUser()` in
   the Route Handler before calling them. Times are UTC ISO strings; format them with
   `formatDateTime` so the file shows Bangkok time like the screen.
+- If an export query throws, call `logLoadError("alarms export", error)` (see below) and return
+  a 500 response with a Thai message instead of an empty file.
+
+## Logging load errors (`lib/log.ts`)
+
+- Every `catch` that shows an `ErrorState` or falls back to empty data calls
+  `logLoadError("where", error)` first, so the cause appears in Vercel > Logs (or the browser
+  console for Client Components) while the user sees the Thai message. A silent `catch` left
+  nothing to debug with (issue #35).
+- Pass only the error the failing function threw. Never log env values, keys or a Supabase client.
 
 ## Dashboard (`features/dashboard/`, `app/page.tsx`)
 
@@ -129,6 +139,9 @@ Keep entries short, in English, and do not mention AI tools.
   user as a prop from a Server Component parent instead of importing them.
 - Logout: `<form action={signOut}><button type="submit">Logout</button></form>` with `signOut`
   from `features/auth/actions.ts`. It works in both Server and Client Components.
+- Supabase Authentication > URL Configuration: Site URL is `https://automation-web-app.vercel.app`,
+  and Redirect URLs list that URL and `http://localhost:3000` (each with `/**`). Supabase uses them
+  for links in its emails (e.g. password reset). Set them again in any new Supabase project.
 - Sign-up is turned off in Supabase (Authentication > Sign In / Providers). New accounts are added
   by the owner in the Supabase dashboard and start as `technician`.
 - `proxy.ts` runs on every page, so if `NEXT_PUBLIC_SUPABASE_URL` or

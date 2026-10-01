@@ -6,11 +6,15 @@ import { requireUser } from "@/features/auth/session";
 import DeleteMachineButton from "@/features/machines/DeleteMachineButton";
 import { getMachine } from "@/features/machines/queries";
 import { formatDateTime } from "@/lib/format";
+import { logLoadError } from "@/lib/log";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/machines/[id]">): Promise<Metadata> {
-  const machine = await getMachine((await params).id).catch(() => null);
+  const machine = await getMachine((await params).id).catch((error) => {
+    logLoadError("machine page title", error);
+    return null;
+  });
   return { title: machine?.machine_code ?? "Machine" };
 }
 
