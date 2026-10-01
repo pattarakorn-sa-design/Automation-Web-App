@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { canChangeStatus, canUpdateAlarm, nextStatuses } from "./status";
+import {
+  ALARM_CLOSED_MESSAGE,
+  ALARM_READ_ONLY_MESSAGE,
+  alarmReadOnlyMessage,
+  canChangeStatus,
+  canUpdateAlarm,
+  nextStatuses,
+} from "./status";
 
 describe("nextStatuses (BR-ALM-01, BR-ALM-02)", () => {
   it.each(["admin", "technician"] as const)(
@@ -62,5 +69,25 @@ describe("viewer (REQ-AUTH-08)", () => {
   it("cannot change a status, not even keep the same one", () => {
     expect(canChangeStatus("Open", "In Progress", "viewer")).toBe(false);
     expect(canChangeStatus("Open", "Open", "viewer")).toBe(false);
+  });
+});
+
+describe("alarmReadOnlyMessage (issue #56)", () => {
+  it("gives admins the form in every status", () => {
+    for (const status of ["Open", "In Progress", "Closed"] as const) {
+      expect(alarmReadOnlyMessage(status, "admin")).toBeNull();
+    }
+  });
+
+  it("gives technicians the form until the alarm is closed", () => {
+    expect(alarmReadOnlyMessage("Open", "technician")).toBeNull();
+    expect(alarmReadOnlyMessage("In Progress", "technician")).toBeNull();
+    expect(alarmReadOnlyMessage("Closed", "technician")).toBe(ALARM_CLOSED_MESSAGE);
+  });
+
+  it("tells a viewer about read-only access, not that an open alarm is closed", () => {
+    for (const status of ["Open", "In Progress", "Closed"] as const) {
+      expect(alarmReadOnlyMessage(status, "viewer")).toBe(ALARM_READ_ONLY_MESSAGE);
+    }
   });
 });

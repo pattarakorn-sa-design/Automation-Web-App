@@ -43,6 +43,9 @@ Keep entries short, in English, and do not mention AI tools.
   It checks inserts and changes of `technician_id` only, so a record whose technician later became a
   viewer can still be edited. Its error is 23514 with `maintenance_records_technician_role` in the
   message, mapped to a Thai message on the Technician field.
+- When a page hides a form from a viewer, also check the text shown instead. The alarm page first
+  told viewers "This alarm is closed" on open alarms (issue #56); `alarmReadOnlyMessage()` in
+  `features/alarms/status.ts` now picks the message by role and status.
 - The two migrations must run in order and as separate runs: Postgres cannot use a new enum value in
   the transaction that added it. After running them, run `npm run db:types`.
 - The migrations were tested on a throwaway in-memory Postgres (PGlite) with stand-ins for

@@ -29,6 +29,18 @@ export function canUpdateAlarm(current: AlarmStatus, role: Role): boolean {
   return current !== "Closed" || role === "admin";
 }
 
+export const ALARM_CLOSED_MESSAGE = "This alarm is closed. Only an admin can reopen it.";
+export const ALARM_READ_ONLY_MESSAGE =
+  "You have read-only access. Only admins and technicians can update an alarm.";
+
+// Why this user sees the status and notes read-only, or null when they get the
+// form. A viewer is read-only on every alarm (REQ-AUTH-08), not because the
+// alarm is closed (issue #56).
+export function alarmReadOnlyMessage(current: AlarmStatus, role: Role): string | null {
+  if (canUpdateAlarm(current, role)) return null;
+  return isWorkerRole(role) ? ALARM_CLOSED_MESSAGE : ALARM_READ_ONLY_MESSAGE;
+}
+
 export function canChangeStatus(
   from: AlarmStatus,
   to: AlarmStatus,
