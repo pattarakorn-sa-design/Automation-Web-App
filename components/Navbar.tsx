@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { getNavItems, isActive, type Role } from "./navigation";
+import ThemeToggle from "./ThemeToggle";
 
 type NavbarProps = {
   user: { fullName: string; role: Role };
@@ -87,18 +88,21 @@ export default function Navbar({ user, signOutAction }: NavbarProps) {
             })}
           </ul>
 
-          <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 lg:justify-end lg:border-t-0 lg:pt-0 dark:border-gray-800">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-3 lg:flex-nowrap lg:justify-end lg:border-t-0 lg:pt-0 dark:border-gray-800">
             <Link
               href="/profile"
               onClick={closeMenu}
-              className="flex min-w-0 items-center gap-2 rounded-md px-1 py-1 text-sm text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
+              className="order-1 flex min-w-0 items-center gap-2 rounded-md px-1 py-1 text-sm text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
             >
               <span className="truncate font-medium">{user.fullName}</span>
               <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium capitalize text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                 {user.role}
               </span>
             </Link>
-            <form action={signOutAction}>
+            {/* Own row in the folded menu so a 360 px bar does not overflow; between
+                the name and Logout in the wide bar. */}
+            <ThemeToggle className="order-3 w-full justify-start lg:order-2 lg:w-auto" />
+            <form action={signOutAction} className="order-2 lg:order-3">
               <button
                 type="submit"
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
