@@ -79,8 +79,8 @@ npm ci
 
    | ตัวแปร | ความหมาย |
    |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL จาก Supabase Dashboard > Project Settings > API |
-   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (ปลอดภัยที่จะอยู่ในเบราว์เซอร์ เพราะสิทธิ์ถูกจำกัดด้วย RLS) |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL อยู่ที่หน้า Project Overview ใน Supabase Dashboard |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key อยู่ที่ Project Settings > API Keys (ปลอดภัยที่จะอยู่ในเบราว์เซอร์ เพราะสิทธิ์ถูกจำกัดด้วย RLS) |
    | `SUPABASE_SECRET_KEY` | ใช้ฝั่ง Server เท่านั้น ข้าม RLS ได้ **ห้ามขึ้นต้นด้วย `NEXT_PUBLIC_` และห้าม commit** |
 
    `.env.local` ถูกกันไว้ใน `.gitignore` อยู่แล้ว
@@ -138,8 +138,7 @@ docs/                เอกสารความต้องการแล�
 
 ## Vercel URL
 
-<!-- TODO(11.1): ใส่ URL จริงหลัง deploy บน Vercel (งาน 1.7 และ 8.x) -->
-_(ใส่ URL หลัง deploy)_
+<https://automation-web-app.vercel.app>
 
 ## การใช้ AI
 
