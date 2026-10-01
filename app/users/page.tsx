@@ -4,6 +4,7 @@ import ErrorState from "@/components/ErrorState";
 import { requireRole } from "@/features/auth/session";
 import UserRowForm from "@/features/users/UserRowForm";
 import { listUsersForAdmin } from "@/features/users/queries";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "Users",
@@ -15,7 +16,8 @@ export default async function UsersPage() {
   let users: Awaited<ReturnType<typeof listUsersForAdmin>>;
   try {
     users = await listUsersForAdmin();
-  } catch {
+  } catch (error) {
+    logLoadError("users list", error);
     return (
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-12">
         <h1 className="mb-6 text-2xl font-semibold">Users</h1>

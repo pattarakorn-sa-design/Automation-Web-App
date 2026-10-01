@@ -8,11 +8,15 @@ import { getAlarm } from "@/features/alarms/queries";
 import { canUpdateAlarm, nextStatuses } from "@/features/alarms/status";
 import { requireUser } from "@/features/auth/session";
 import { formatDateTime } from "@/lib/format";
+import { logLoadError } from "@/lib/log";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/alarms/[id]">): Promise<Metadata> {
-  const alarm = await getAlarm((await params).id).catch(() => null);
+  const alarm = await getAlarm((await params).id).catch((error) => {
+    logLoadError("alarm page title", error);
+    return null;
+  });
   return { title: alarm ? `Alarm ${alarm.alarm_code}` : "Alarm" };
 }
 

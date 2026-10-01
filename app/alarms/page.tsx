@@ -13,6 +13,7 @@ import { listAlarms } from "@/features/alarms/queries";
 import { requireUser } from "@/features/auth/session";
 import { pageCount } from "@/features/machines/filters";
 import { listMachineOptions } from "@/features/machines/queries";
+import { logLoadError } from "@/lib/log";
 
 export const metadata: Metadata = {
   title: "Alarms",
@@ -29,7 +30,8 @@ export default async function AlarmsPage({ searchParams }: PageProps<"/alarms">)
       listAlarms(filters),
       listMachineOptions(),
     ]);
-  } catch {
+  } catch (error) {
+    logLoadError("alarms list", error);
     return (
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <h1 className="mb-6 text-2xl font-semibold">Alarms</h1>

@@ -4,6 +4,14 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Logging load errors (`lib/log.ts`)
+
+- Every `catch` that shows an `ErrorState` or falls back to empty data calls
+  `logLoadError("where", error)` first, so the cause appears in Vercel > Logs (or the browser
+  console for Client Components) while the user sees the Thai message. A silent `catch` left
+  nothing to debug with (issue #35).
+- Pass only the error the failing function threw. Never log env values, keys or a Supabase client.
+
 ## Dashboard (`features/dashboard/`, `app/page.tsx`)
 
 - Counts come from the database, one `count: "exact", head: true` query per status (no rows are
@@ -116,6 +124,9 @@ Keep entries short, in English, and do not mention AI tools.
   user as a prop from a Server Component parent instead of importing them.
 - Logout: `<form action={signOut}><button type="submit">Logout</button></form>` with `signOut`
   from `features/auth/actions.ts`. It works in both Server and Client Components.
+- Supabase Authentication > URL Configuration: Site URL is `https://automation-web-app.vercel.app`,
+  and Redirect URLs list that URL and `http://localhost:3000` (each with `/**`). Supabase uses them
+  for links in its emails (e.g. password reset). Set them again in any new Supabase project.
 - Sign-up is turned off in Supabase (Authentication > Sign In / Providers). New accounts are added
   by the owner in the Supabase dashboard and start as `technician`.
 - `proxy.ts` runs on every page, so if `NEXT_PUBLIC_SUPABASE_URL` or
