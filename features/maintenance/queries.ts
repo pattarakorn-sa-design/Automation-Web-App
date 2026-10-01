@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { pageRange } from "@/features/machines/filters";
+import { dateBounds } from "@/lib/dateRange";
 import { fetchExportRows } from "@/lib/export";
 import { createClient } from "@/lib/supabase/server";
 import type { MaintenanceFilters } from "./filters";
@@ -27,6 +28,9 @@ export async function listMaintenance(filters: MaintenanceFilters) {
   if (filters.machine) query = query.eq("machine_id", filters.machine);
   if (filters.status) query = query.eq("status", filters.status);
   if (filters.technician) query = query.eq("technician_id", filters.technician);
+  const started = dateBounds(filters);
+  if (started.gte) query = query.gte("start_date", started.gte);
+  if (started.lte) query = query.lte("start_date", started.lte);
 
   const { data, count, error } = await query;
   // PGRST103: the page is past the last row. Treat it as an empty page.
@@ -89,6 +93,9 @@ export async function exportMaintenance(filters: MaintenanceFilters) {
     if (filters.machine) query = query.eq("machine_id", filters.machine);
     if (filters.status) query = query.eq("status", filters.status);
     if (filters.technician) query = query.eq("technician_id", filters.technician);
+    const started = dateBounds(filters);
+    if (started.gte) query = query.gte("start_date", started.gte);
+    if (started.lte) query = query.lte("start_date", started.lte);
 
     const { data, error } = await query;
     if (error) throw new Error(`exportMaintenance failed: ${error.message}`);

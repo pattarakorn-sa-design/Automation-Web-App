@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { containsPattern, pageRange } from "@/features/machines/filters";
+import { timestampBounds } from "@/lib/dateRange";
 import { fetchExportRows } from "@/lib/export";
 import { createClient } from "@/lib/supabase/server";
 import type { AlarmFilters } from "./filters";
@@ -31,6 +32,9 @@ export async function listAlarms(filters: AlarmFilters) {
   if (filters.status) query = query.eq("status", filters.status);
   const pattern = containsPattern(filters.code);
   if (pattern) query = query.ilike("alarm_code", pattern);
+  const occurred = timestampBounds(filters);
+  if (occurred.gte) query = query.gte("occurred_at", occurred.gte);
+  if (occurred.lt) query = query.lt("occurred_at", occurred.lt);
 
   const { data, count, error } = await query;
   // PGRST103: the page is past the last row. Treat it as an empty page.
@@ -106,6 +110,9 @@ export async function exportAlarms(filters: AlarmFilters) {
     if (filters.status) query = query.eq("status", filters.status);
     const pattern = containsPattern(filters.code);
     if (pattern) query = query.ilike("alarm_code", pattern);
+    const occurred = timestampBounds(filters);
+    if (occurred.gte) query = query.gte("occurred_at", occurred.gte);
+    if (occurred.lt) query = query.lt("occurred_at", occurred.lt);
 
     const { data, error } = await query;
     if (error) throw new Error(`exportAlarms failed: ${error.message}`);
