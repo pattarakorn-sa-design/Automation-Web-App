@@ -11,9 +11,15 @@ Keep entries short, in English, and do not mention AI tools.
 - Technicians never choose the technician: the form shows their name, and the Server Action
   replaces whatever was submitted with their own id (`responsibleTechnician()`), so they cannot
   create or hand a record to someone else.
-- The "Caused by alarm" select only lists alarms of the selected machine (BR-MNT-03), from the
-  200 most recent alarms plus the one already linked. The database rejects a mismatch too; that
-  error is shown under the alarm field.
+- The "Caused by alarm" select only lists alarms of the selected machine (BR-MNT-03): up to the
+  200 newest of that machine, plus the one already linked. The page sends the alarms of the
+  preselected machine; when the user picks another machine, the form loads that machine's alarms
+  in the browser with `fetchAlarmOptions()` (`features/alarms/options.ts`, a read allowed by RLS).
+  Do not fetch alarms of all machines and filter in the browser: older machines lose their
+  alarms once 200 newer ones exist elsewhere (issue #27). The database rejects a mismatch too;
+  that error is shown under the alarm field.
+- Maintenance check violations (`23514`) are told apart by constraint name in `errors.ts`, like
+  the alarm errors.
 - `start_date` / `end_date` are `date` columns: use `<input type="date">`, `bangkokToday()`,
   `isDateValue()` and `formatDate()` from `lib/format.ts`. No time zone conversion is needed.
 - `/maintenance/new?machine=<id>&alarm=<id>` preselects the fields. The alarm page links to it

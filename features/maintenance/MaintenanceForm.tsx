@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState, type FormEvent } from "react";
+import { useActionState, useRef, useState, type FormEvent } from "react";
 import { z } from "zod";
 import SelectField from "@/components/SelectField";
 import SubmitButton from "@/components/SubmitButton";
 import TextAreaField from "@/components/TextAreaField";
 import TextField from "@/components/TextField";
-import type { AlarmOption } from "@/features/alarms/queries";
+import { fetchAlarmOptions, type AlarmOption } from "@/features/alarms/options";
 import type { Role } from "@/features/auth/roles";
 import type { MachineOption } from "@/features/machines/queries";
 import type { ProfileOption } from "@/features/users/queries";
+import { createClient } from "@/lib/supabase/client";
 import type { MaintenanceFormState } from "./errors";
 import { MAINTENANCE_STATUSES, MAINTENANCE_TYPES } from "./rules";
 import { maintenanceFormValues, maintenanceSchema } from "./schema";
@@ -33,6 +34,7 @@ type MaintenanceFormProps = {
     formData: FormData,
   ) => Promise<MaintenanceFormState>;
   machines: MachineOption[];
+  // Alarms of the initially selected machine; others are loaded on demand.
   alarms: AlarmOption[];
   people: ProfileOption[];
   currentUser: { id: string; fullName: string; role: Role };
@@ -60,6 +62,34 @@ export default function MaintenanceForm({
   const values = (state.values as MaintenanceFormValues | undefined) ?? initial;
   // The alarm list depends on the machine, so the machine is tracked here.
   const [machineId, setMachineId] = useState(values.machineId);
+  // Alarms of the selected machine (BR-MNT-03). The page provides them for the
+  // first machine; picking another machine loads that machine's alarms here.
+  const [alarmOptions, setAlarmOptions] = useState<{
+    status: "ready" | "loading" | "error";
+    alarms: AlarmOption[];
+  }>({ status: "ready", alarms });
+  // Ignores a slow response for a machine the user has already moved away from.
+  const latestMachine = useRef(machineId);
+
+  async function changeMachine(nextMachineId: string) {
+    setMachineId(nextMachineId);
+    latestMachine.current = nextMachineId;
+    if (!nextMachineId) {
+      setAlarmOptions({ status: "ready", alarms: [] });
+      return;
+    }
+    setAlarmOptions({ status: "loading", alarms: [] });
+    try {
+      const loaded = await fetchAlarmOptions(createClient(), nextMachineId);
+      if (latestMachine.current === nextMachineId) {
+        setAlarmOptions({ status: "ready", alarms: loaded });
+      }
+    } catch {
+      if (latestMachine.current === nextMachineId) {
+        setAlarmOptions({ status: "error", alarms: [] });
+      }
+    }
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     const parsed = maintenanceSchema.safeParse(
@@ -75,8 +105,11 @@ export default function MaintenanceForm({
 
   const fieldErrors = clientErrors ?? state.fieldErrors;
   const isAdmin = currentUser.role === "admin";
-  // BR-MNT-03: only alarms of the selected machine can be linked.
-  const machineAlarms = alarms.filter((alarm) => alarm.machine_id === machineId);
+  const alarmPlaceholder = !machineId
+    ? "Select a machine first"
+    : alarmOptions.status === "loading"
+      ? "Loading alarms..."
+      : "No alarm";
 
   return (
     <form
@@ -98,7 +131,7 @@ export default function MaintenanceForm({
         label="Machine"
         name="machineId"
         value={machineId}
-        onChange={(event) => setMachineId(event.target.value)}
+        onChange={(event) => void changeMachine(event.target.value)}
         placeholder="Select a machine"
         options={machines.map((machine) => ({
           value: machine.id,
@@ -107,14 +140,20 @@ export default function MaintenanceForm({
         error={fieldErrors?.machineId?.[0]}
       />
       <SelectField
-        // Remount when the machine changes so an alarm of the old machine is not kept.
-        key={machineId}
+        // Remount when the machine or its alarm list changes, so an alarm of the
+        // old machine is not kept and the saved alarm is selected once loaded.
+        key={`${machineId}-${alarmOptions.status}`}
         label="Caused by alarm (optional)"
         name="alarmId"
         defaultValue={values.alarmId}
-        placeholder={machineId ? "No alarm" : "Select a machine first"}
-        disabled={!machineId}
-        options={machineAlarms.map((alarm) => ({
+        placeholder={alarmPlaceholder}
+        disabled={!machineId || alarmOptions.status === "loading"}
+        hint={
+          alarmOptions.status === "error"
+            ? "โหลดรายการ Alarm ไม่สำเร็จ เลือกเครื่องจักรใหม่อีกครั้ง หรือบันทึกโดยไม่ระบุ Alarm"
+            : undefined
+        }
+        options={alarmOptions.alarms.map((alarm) => ({
           value: alarm.id,
           label: `${alarm.alarm_code} (${alarm.status})`,
         }))}

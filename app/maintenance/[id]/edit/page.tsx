@@ -24,7 +24,7 @@ export default async function EditMaintenancePage({
 
   const [machines, alarms, people] = await Promise.all([
     listMachineOptions(),
-    listAlarmOptions(record.alarm_id),
+    listAlarmOptions(record.machine_id, record.alarm_id),
     listProfileOptions(),
   ]);
 
