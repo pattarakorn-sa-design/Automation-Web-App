@@ -3,7 +3,7 @@
 Checklist สำหรับทดสอบระบบก่อนส่งงาน (งาน 10.1 / 10.2) อ้างอิง Acceptance Criteria ในหัวข้อ 11
 และ Traceability ในหัวข้อ 13 ของ `docs/REQUIREMENTS.md`
 
-**ผลการทดสอบรอบ 10.2:** ทดสอบบน Vercel URL เมื่อ 2026-10-01 โดย Pattarakorn และ Phakkathima ด้วยบัญชี Admin, Technician และ Viewer ผ่านทุกข้อ ไม่พบบั๊ก
+**ผลการทดสอบรอบ 10.2:** ทดสอบบน Vercel URL เมื่อ 2026-10-01 โดย Pattarakorn และ Phakkathima ด้วยบัญชี Admin, Technician และ Viewer ผ่านทุกข้อ ไม่พบบั๊ก ภายหลังพบบั๊กข้อความ 1 รายการระหว่างถ่าย Screenshot ดูตาราง "บั๊กที่พบ" ท้ายไฟล์
 
 ## วิธีใช้
 
@@ -211,3 +211,4 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | # | Test ID | อาการ | Role ที่เจอ | ผู้รับผิดชอบ | สถานะ |
 |---|---|---|---|---|---|
 | 1 | — | ไม่พบบั๊กจากการทดสอบรอบ 10.2 | — | — | — |
+| 2 | TC-BNS-03c | พบหลังรอบ 10.2 ระหว่างถ่าย Screenshot (11.4): Viewer เปิด Alarm ที่ยัง Open หรือ In Progress แล้วเห็นข้อความ "This alarm is closed. Only an admin can reopen it." สิทธิ์ยังถูกต้อง ผิดแค่ข้อความ (issue #56) | Viewer | Pattarakorn | แก้แล้ว แสดงข้อความ read-only ตาม Role |
