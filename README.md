@@ -150,11 +150,11 @@ erDiagram
 |---|---|
 | Machine ID ห้ามซ้ำ (REQ-MCH-03) | `unique` + `check` ตัวพิมพ์ใหญ่ |
 | ปิด Alarm ต้องมี Cause และ Action Taken (BR-ALM-03) | check `alarms_closed_requires_details` |
-| ลำดับสถานะ Alarm และ Technician แก้ Alarm ที่ปิดแล้วไม่ได้ (BR-ALM-01, 02) | trigger `enforce_alarm_update_rules` |
-| บันทึกผู้ปิดและเวลาที่ปิด ล้างเมื่อเปิดใหม่ (BR-ALM-04) | trigger `enforce_alarm_update_rules` |
+| ลำดับสถานะ Alarm และ Technician แก้ Alarm ที่ปิดแล้วไม่ได้ (BR-ALM-01, 02) | trigger `alarms_enforce_update_rules` (ฟังก์ชัน `enforce_alarm_update_rules`) |
+| บันทึกผู้ปิดและเวลาที่ปิด ล้างเมื่อเปิดใหม่ (BR-ALM-04) | trigger `alarms_enforce_update_rules` (ฟังก์ชัน `enforce_alarm_update_rules`) |
 | งานซ่อม Completed ต้องมี Action Taken และวันจบ (BR-MNT-02) | check `maintenance_records_completed_requires_details` |
 | Alarm ที่อ้างต้องเป็นของเครื่องเดียวกับงานซ่อม (BR-MNT-03) | foreign key คู่ `maintenance_records_alarm_same_machine_fkey` |
-| ห้ามเปลี่ยน Role ของตัวเอง (REQ-AUTH-07) | trigger `prevent_self_role_change` |
+| ห้ามเปลี่ยน Role ของตัวเอง (REQ-AUTH-07) | trigger `profiles_prevent_self_role_change` (ฟังก์ชัน `prevent_self_role_change`) |
 | ใครอ่านและแก้อะไรได้ตาม Role | RLS policy ทุกตาราง (ดูตาราง "Role และสิทธิ์โดยสรุป" ด้านบน) |
 
 ฟังก์ชันที่ใช้ร่วม: `current_user_role()` คืน Role ของผู้ใช้ที่ login ใช้ใน RLS policy
