@@ -4,6 +4,19 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Screenshots (`docs/screenshots/`)
+
+- Files are named `<page>-<light|dark>.png`, with `-mobile` for 360 px and a `technician-` or `viewer-` prefix for those roles. Everything else
+  is taken as admin at 1280 px. The README shows a selection; the folder has all of them.
+- They were taken from the app running on a laptop, not from Vercel: `next dev` with `NEXT_PUBLIC_SUPABASE_URL` and
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` set on the command line (this overrides `.env.local`) to point at a small local script that answers the
+  auth and read requests the app makes, with the data of `supabase/seed.sql`. The session is a cookie the script writes, so no real account,
+  email or key appears in a picture, and nothing touches the real database. The script is a throwaway and is not in the repo.
+- To retake one: sign in as the role in a headless browser, set `localStorage.theme` to `light` or `dark` before the page loads, and hide the
+  Next.js dev badge with `nextjs-portal { display: none }`. Pick the submit button inside `main form`, because the first submit button on a page is Logout.
+- A viewer picture of an Open alarm is left out on purpose: that page tells a viewer "This alarm is closed" (the message in
+  `app/alarms/[id]/page.tsx` is shown whenever the alarm cannot be edited). Issue #56 tracks the fix; retake the picture after it is merged.
+
 ## Manual test checklist (`docs/TEST_CHECKLIST.md`)
 
 - Each main table has three result columns: **A** (Admin), **T** (Technician) and **V** (Viewer). Use `-` for a role the
