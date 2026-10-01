@@ -4,6 +4,19 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Schema file (plan 11.3, `supabase/schema.sql`)
+
+- `supabase/schema.sql` is every migration joined in file name order, for the submission. It is
+  generated: after adding a migration run `npm run db:schema` and commit both files. A test fails
+  when the file is out of date, so CI catches a forgotten update.
+- It was run as one script inside a single transaction on a fresh Postgres (PGlite, with stand-ins
+  for `auth.users` and `auth.uid()`), then `seed.sql`: 4 tables with RLS, 5 enums, 13 policies,
+  8 triggers, and 10 / 9 / 8 seed rows. Adding the `viewer` enum value in the same transaction is
+  fine because nothing in the file uses that value as a literal.
+- The builder is `supabase/build-schema.mts`. The `.mts` extension makes Node run it as an ES
+  module; a `.ts` file prints a MODULE_TYPELESS_PACKAGE_JSON warning unless package.json sets
+  `"type": "module"`, which we do not want to change for the whole project.
+
 ## Manual test checklist (`docs/TEST_CHECKLIST.md`)
 
 - Each main table has three result columns: **A** (Admin), **T** (Technician) and **V** (Viewer). Use `-` for a role the
