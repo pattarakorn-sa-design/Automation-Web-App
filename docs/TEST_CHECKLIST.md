@@ -98,7 +98,7 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 | TC-DSH-03 | REQ-DSH-04 | เปรียบเทียบจำนวน Maintenance ที่ยังไม่เสร็จและทั้งหมดกับหน้า Maintenance | ตรงกัน | [ ] | [ ] |
 | TC-DSH-04 | REQ-DSH-03 | ปิด Alarm หนึ่งรายการแล้วกลับมาดู Dashboard | จำนวน Alarm ค้างลดลง 1 | [ ] | [ ] |
 | TC-DSH-05 | REQ-DSH-05 | ดูรายการ Alarm ล่าสุด | แสดง 5 รายการล่าสุดเรียงตามเวลา และกดลิงก์ไปรายละเอียดได้ | [ ] | [ ] |
-| TC-DSH-06 | NFR-REL-01, US-07 | จำลอง Database ใช้ไม่ได้ **ในเครื่องเท่านั้น** โดยใส่ `NEXT_PUBLIC_SUPABASE_URL` ผิดใน `.env.local` ชั่วคราว แล้วเปิด Dashboard (ดู Note 3) | แสดง Error State ที่อ่านเข้าใจ ไม่ใช่หน้าว่าง และไม่ขึ้นว่าสำเร็จ | [ ] | - |
+| TC-DSH-06 | NFR-REL-01, US-07 | จำลองให้ query ของ Dashboard ล้มเหลว **ในเครื่องเท่านั้น** แล้วเปิด Dashboard (ดู Note 3) | แสดง Error State ที่อ่านเข้าใจ ไม่ใช่หน้าว่าง และไม่ขึ้นว่าสำเร็จ | [ ] | - |
 
 ## 7. UI, Responsive และ Usability
 
@@ -145,13 +145,15 @@ Checklist สำหรับทดสอบระบบก่อนส่งง�
 2. **TC-AUTH-08 / 09**: การเรียก Supabase Client โดยตรงต้องใช้ session ของ Technician จริง
    ทำได้โดยเปิด Console บนหน้าเว็บที่ Login แล้ว หรือเขียน script ชั่วคราวในเครื่อง
    ห้าม commit script หรือ token ลง repo
-3. **TC-DSH-06**: ทดสอบในเครื่องเท่านั้น ห้ามทดสอบบน Preview หรือ Production
-   เพราะ env ของ Preview ใช้ร่วมกันทุก branch ถ้าแก้ `NEXT_PUBLIC_SUPABASE_URL` ของ Preview
-   Preview ของทุก PR จะพัง วิธีทำ:
-   1. Login ด้วยค่าปกติก่อน แล้วหยุด `npm run dev`
-   2. แก้ `NEXT_PUBLIC_SUPABASE_URL` ใน `.env.local` ให้ผิดชั่วคราว (ไฟล์นี้ไม่ถูก commit) แล้วรัน `npm run dev` ใหม่
-   3. เปิด Dashboard ตรวจว่าแสดง Error State
-   4. **เปลี่ยนกลับเป็นค่าเดิม** แล้วรัน `npm run dev` ใหม่ ตรวจว่าใช้งานได้ปกติ
+3. **TC-DSH-06**: ทดสอบในเครื่องเท่านั้น ห้ามทดสอบบน Preview หรือ Production (ตัดสินใจใน issue #17)
+   ไม่ใช้วิธีใส่ `NEXT_PUBLIC_SUPABASE_URL` ผิด เพราะ `proxy.ts` จะตรวจ session ไม่ได้และส่งไป `/login`
+   ทุกครั้ง จึงไม่มีทางเห็น Error State ของ Dashboard ให้ทำให้ query ของ Dashboard ล้มเหลวแทน:
+   1. รัน `npm run dev` และ Login ด้วยบัญชีจริง
+   2. ใน `features/dashboard/queries.ts` ฟังก์ชัน `listRecentAlarms` แก้ `.order("occurred_at", ...)`
+      เป็นคอลัมน์ที่ไม่มีจริงชั่วคราว เช่น `.order("occurred_at_x", ...)` แล้ว save
+   3. เปิด Dashboard ตรวจว่าแสดง "โหลดข้อมูล Dashboard ไม่สำเร็จ" แทนตัวเลข ไม่ใช่หน้าว่างหรือตัวเลข 0
+   4. **คืนไฟล์** ด้วย `git checkout -- features/dashboard/queries.ts` แล้วตรวจว่า Dashboard กลับมาปกติ
+      และ `git status` ไม่มีไฟล์นี้ค้าง
 
 ## บั๊กที่พบ
 
