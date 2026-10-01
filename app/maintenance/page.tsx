@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import EmptyState from "@/components/EmptyState";
 import ErrorState from "@/components/ErrorState";
+import { isWorkerRole } from "@/features/auth/roles";
 import { requireUser } from "@/features/auth/session";
 import { pageCount } from "@/features/machines/filters";
 import { listMachineOptions } from "@/features/machines/queries";
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 export default async function MaintenancePage({
   searchParams,
 }: PageProps<"/maintenance">) {
-  await requireUser();
+  const user = await requireUser();
   const filters = parseMaintenanceFilters(await searchParams);
 
   let result: Awaited<ReturnType<typeof listMaintenance>>;
@@ -60,13 +61,15 @@ export default async function MaintenancePage({
           >
             Export CSV
           </a>
-          {/* Admins and technicians both record work (REQ-MNT-01). */}
-          <Link
-            href="/maintenance/new"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            New record
-          </Link>
+          {/* Admins and technicians both record work (REQ-MNT-01); viewers only read. */}
+          {isWorkerRole(user.role) ? (
+            <Link
+              href="/maintenance/new"
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              New record
+            </Link>
+          ) : null}
         </div>
       </div>
 
