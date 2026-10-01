@@ -18,7 +18,7 @@ const linkActive =
 const linkIdle =
   "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800";
 
-// Top navigation for signed-in pages. Below the md breakpoint the menu is
+// Top navigation for signed-in pages. Below the lg breakpoint (1024 px) the menu is
 // folded behind a button so it fits a 360 px wide screen.
 export default function Navbar({ user, signOutAction }: NavbarProps) {
   const pathname = usePathname();
@@ -35,7 +35,7 @@ export default function Navbar({ user, signOutAction }: NavbarProps) {
         <Link
           href="/"
           onClick={closeMenu}
-          className="mr-auto text-base font-semibold text-gray-900 md:mr-0 dark:text-gray-100"
+          className="mr-auto text-base font-semibold text-gray-900 lg:mr-0 dark:text-gray-100"
         >
           Alarm &amp; Maintenance
         </Link>
@@ -45,7 +45,7 @@ export default function Navbar({ user, signOutAction }: NavbarProps) {
           aria-expanded={open}
           aria-controls="main-menu"
           onClick={() => setOpen((value) => !value)}
-          className="rounded-md border border-gray-300 p-2 text-gray-700 hover:bg-gray-100 md:hidden dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+          className="rounded-md border border-gray-300 p-2 text-gray-700 hover:bg-gray-100 lg:hidden dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           <span className="sr-only">Menu</span>
           <svg
@@ -67,9 +67,9 @@ export default function Navbar({ user, signOutAction }: NavbarProps) {
 
         <div
           id="main-menu"
-          className={`${open ? "flex" : "hidden"} w-full flex-col gap-3 md:flex md:w-auto md:flex-1 md:flex-row md:items-center md:justify-between md:gap-6`}
+          className={`${open ? "flex" : "hidden"} w-full flex-col gap-3 lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:gap-6`}
         >
-          <ul className="flex flex-col gap-1 md:flex-row">
+          <ul className="flex flex-col gap-1 lg:flex-row">
             {items.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -87,7 +87,7 @@ export default function Navbar({ user, signOutAction }: NavbarProps) {
             })}
           </ul>
 
-          <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 md:justify-end md:border-t-0 md:pt-0 dark:border-gray-800">
+          <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 lg:justify-end lg:border-t-0 lg:pt-0 dark:border-gray-800">
             <Link
               href="/profile"
               onClick={closeMenu}
