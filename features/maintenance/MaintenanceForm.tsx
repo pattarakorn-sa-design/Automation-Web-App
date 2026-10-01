@@ -14,7 +14,7 @@ import type { ProfileOption } from "@/features/users/queries";
 import { logLoadError } from "@/lib/log";
 import { createClient } from "@/lib/supabase/client";
 import type { MaintenanceFormState } from "./errors";
-import { MAINTENANCE_STATUSES, MAINTENANCE_TYPES } from "./rules";
+import { MAINTENANCE_STATUSES, MAINTENANCE_TYPES, technicianOptions } from "./rules";
 import { maintenanceFormValues, maintenanceSchema } from "./schema";
 
 export type MaintenanceFormValues = {
@@ -168,10 +168,7 @@ export default function MaintenanceForm({
           name="technicianId"
           defaultValue={values.technicianId}
           placeholder="Select the responsible technician"
-          options={people.map((person) => ({
-            value: person.id,
-            label: person.role === "technician" ? person.full_name : `${person.full_name} (${person.role})`,
-          }))}
+          options={technicianOptions(people, values.technicianId)}
           error={fieldErrors?.technicianId?.[0]}
         />
       ) : (
