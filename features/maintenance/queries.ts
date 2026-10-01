@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { pageRange } from "@/features/machines/filters";
-import { capRows, EXPORT_ROW_LIMIT } from "@/lib/export";
+import { fetchExportRows } from "@/lib/export";
 import { createClient } from "@/lib/supabase/server";
 import type { MaintenanceFilters } from "./filters";
 
@@ -66,29 +66,34 @@ export type Maintenance = NonNullable<Awaited<ReturnType<typeof getMaintenance>>
 // Every maintenance record matching the list filters, newest start date first,
 // for the CSV export (plan 9.4). Same filters and order as listMaintenance but
 // without pages, capped at EXPORT_ROW_LIMIT rows; `truncated` is true when
-// more rows matched. Throws when the query fails.
+// more rows matched. Read in pages of EXPORT_PAGE_SIZE rows (issue #42).
+// Throws when the query fails.
 export async function exportMaintenance(filters: MaintenanceFilters) {
   const supabase = await createClient();
 
-  let query = supabase
-    .from("maintenance_records")
-    .select(
-      `id, type, problem, action_taken, status, start_date, end_date,
-       machine:machines!maintenance_records_machine_id_fkey(machine_code, name),
-       technician:profiles!maintenance_records_technician_id_fkey(full_name),
-       alarm:alarms!maintenance_records_alarm_same_machine_fkey(alarm_code)`,
-    )
-    .order("start_date", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(EXPORT_ROW_LIMIT + 1);
+  return fetchExportRows(async (from, to) => {
+    let query = supabase
+      .from("maintenance_records")
+      .select(
+        `id, type, problem, action_taken, status, start_date, end_date,
+         machine:machines!maintenance_records_machine_id_fkey(machine_code, name),
+         technician:profiles!maintenance_records_technician_id_fkey(full_name),
+         alarm:alarms!maintenance_records_alarm_same_machine_fkey(alarm_code)`,
+      )
+      .order("start_date", { ascending: false })
+      .order("created_at", { ascending: false })
+      // A unique last key keeps the order fixed from one page to the next.
+      .order("id")
+      .range(from, to);
 
-  if (filters.machine) query = query.eq("machine_id", filters.machine);
-  if (filters.status) query = query.eq("status", filters.status);
-  if (filters.technician) query = query.eq("technician_id", filters.technician);
+    if (filters.machine) query = query.eq("machine_id", filters.machine);
+    if (filters.status) query = query.eq("status", filters.status);
+    if (filters.technician) query = query.eq("technician_id", filters.technician);
 
-  const { data, error } = await query;
-  if (error) throw new Error(`exportMaintenance failed: ${error.message}`);
-  return capRows(data);
+    const { data, error } = await query;
+    if (error) throw new Error(`exportMaintenance failed: ${error.message}`);
+    return data;
+  });
 }
 
 export type MaintenanceExportRow = Awaited<
