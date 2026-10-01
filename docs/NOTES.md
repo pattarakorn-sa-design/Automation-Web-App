@@ -4,6 +4,26 @@ Things worth knowing that are not obvious from the code. Read this after pulling
 Add a new entry at the top when you change something the other person will trip over.
 Keep entries short, in English, and do not mention AI tools.
 
+## Viewer role (plan 9.3, REQ-AUTH-08)
+
+- `app_role` has a third value, `viewer`: read-only. Viewers see every page other signed-in users
+  see, can export CSV and edit their own display name, and nothing else. An admin sets the role on
+  the Users page; new sign-ups still start as `technician`.
+- No RLS policy changed. Every write policy, trigger and `requireRole()` call names the roles it
+  allows, so a viewer is refused everywhere. Keep it that way: write `role in ('admin',
+  'technician')` or `isWorkerRole(role)`, never `role <> 'admin'` / `role !== "admin"`, which
+  would let a viewer through.
+- Trigger `maintenance_records_enforce_assignee_role` (function
+  `enforce_maintenance_assignee_role`) only lets an admin or technician be the responsible person.
+  It checks inserts and changes of `technician_id` only, so a record whose technician later became a
+  viewer can still be edited. Its error is 23514 with `maintenance_records_technician_role` in the
+  message, mapped to a Thai message on the Technician field.
+- The two migrations must run in order and as separate runs: Postgres cannot use a new enum value in
+  the transaction that added it. After running them, run `npm run db:types`.
+- The migrations were tested on a throwaway in-memory Postgres (PGlite) with stand-ins for
+  `auth.users` and `auth.uid()`: a viewer reads machines, alarms and profiles, every write is refused,
+  and an admin cannot assign maintenance to a viewer.
+
 ## Dark mode (plan 9.5, `components/theme.ts`, `components/ThemeToggle.tsx`)
 
 - Dark mode is the `dark` class on `<html>`, not `prefers-color-scheme`. `app/globals.css` has
