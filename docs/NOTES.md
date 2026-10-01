@@ -20,6 +20,9 @@ Keep entries short, in English, and do not mention AI tools.
   ("Record maintenance") and the machine page links with the machine only.
 - Option lists for selects: `listProfileOptions()` (`features/users/queries.ts`) and
   `listAlarmOptions()` (`features/alarms/queries.ts`).
+- `MaintenanceTable` shows each record as a card below `lg` (1024 px) and as a table from `lg` up,
+  like `AlarmTable`: six columns do not fit 768 px. Between 768 and 1023 px the cards sit in two
+  columns. The card is one link (to the record), so the machine link is only in the table.
 
 ## Alarms (`features/alarms/`, `app/alarms/`)
 
