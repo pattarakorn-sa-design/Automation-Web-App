@@ -30,7 +30,7 @@
 | ฟังก์ชัน | รายละเอียด |
 |---|---|
 | Login / Logout | เข้าสู่ระบบด้วย Email และ Password (Supabase Auth) บัญชีสร้างโดย Admin |
-| Role-based Access | Admin และ Technician เข้าถึงหน้าและทำรายการได้ต่างกัน ตรวจสิทธิ์ทั้งที่ Server และ Database (RLS) |
+| Role-based Access | Admin, Technician และ Viewer (อ่านอย่างเดียว) เข้าถึงหน้าและทำรายการได้ต่างกัน ตรวจสิทธิ์ทั้งที่ Server และ Database (RLS) |
 | Machine Master | เพิ่ม / ดู / แก้ไข / ลบ เครื่องจักร (Admin) Machine ID ห้ามซ้ำ ลบเครื่องที่มี Alarm หรือ Maintenance ผูกอยู่ไม่ได้ |
 | Alarm Record | สร้าง Alarm และเปลี่ยนสถานะ Open → In Progress → Closed ปิดได้เมื่อมี Cause และ Action Taken ครบ และบันทึกผู้ปิดกับเวลาที่ปิด |
 | Maintenance Record | บันทึกปัญหาและการซ่อมของแต่ละเครื่อง ผูกกับ Alarm ต้นเหตุของเครื่องเดียวกันได้ (ไม่บังคับ) สถานะ Pending / In Progress / Completed Technician บันทึกในชื่อของตนเองเท่านั้น |
@@ -43,18 +43,20 @@
 
 ### Role และสิทธิ์โดยสรุป
 
-| ความสามารถ | Admin | Technician |
-|---|:-:|:-:|
-| ดู Dashboard, Machine, Alarm, Maintenance | ✅ | ✅ |
-| เพิ่ม / แก้ไข / ลบ Machine | ✅ | ❌ |
-| สร้าง / แก้ไขรายละเอียด Alarm | ✅ | ❌ |
-| เปลี่ยนสถานะ Alarm | ✅ | ✅ |
-| สร้าง Maintenance Record | ✅ | ✅ (ในชื่อของตนเองเท่านั้น) |
-| แก้ไข Maintenance Record | ทุกรายการ | เฉพาะที่ตนรับผิดชอบ |
-| Export CSV (Alarm, Maintenance) | ✅ | ✅ |
-| จัดการ User และเปลี่ยน Role ของผู้อื่น | ✅ | ❌ |
-| แก้ชื่อที่แสดงของตนเอง | ✅ | ✅ |
-| เปลี่ยน Role ของตนเอง | ❌ | ❌ |
+| ความสามารถ | Admin | Technician | Viewer |
+|---|:-:|:-:|:-:|
+| ดู Dashboard, Machine, Alarm, Maintenance | ✅ | ✅ | ✅ |
+| เพิ่ม / แก้ไข / ลบ Machine | ✅ | ❌ | ❌ |
+| สร้าง / แก้ไขรายละเอียด Alarm | ✅ | ❌ | ❌ |
+| เปลี่ยนสถานะ Alarm | ✅ | ✅ | ❌ |
+| สร้าง Maintenance Record | ✅ | ✅ (ในชื่อของตนเองเท่านั้น) | ❌ |
+| แก้ไข Maintenance Record | ทุกรายการ | เฉพาะที่ตนรับผิดชอบ | ❌ |
+| Export CSV (Alarm, Maintenance) | ✅ | ✅ | ✅ |
+| จัดการ User และเปลี่ยน Role ของผู้อื่น | ✅ | ❌ | ❌ |
+| แก้ชื่อที่แสดงของตนเอง | ✅ | ✅ | ✅ |
+| เปลี่ยน Role ของตนเอง | ❌ | ❌ | ❌ |
+
+Viewer ใช้กับผู้ที่ต้องดูภาพรวมอย่างเดียว เช่น ผู้จัดการฝ่ายผลิต Admin ตั้ง Role นี้ที่หน้า Users และจะมอบงานซ่อมให้ Viewer ไม่ได้
 
 ตารางเต็มและกฎทางธุรกิจอยู่ใน [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 
