@@ -8,14 +8,17 @@ Keep entries short, in English, and do not mention AI tools.
 
 - Files are named `<page>-<light|dark>.png`, with `-mobile` for 360 px and a `technician-` or `viewer-` prefix for those roles. Everything else
   is taken as admin at 1280 px. The README shows a selection; the folder has all of them.
-- They were taken from the app running on a laptop, not from Vercel: `next dev` with `NEXT_PUBLIC_SUPABASE_URL` and
+- Ten pictures are from the deployed site on Vercel, signed in as admin: `dashboard`, `machines`, `alarms`, `alarm-detail-closed` and
+  `maintenance`, each in light and dark. Take them in a normal Chrome window at about 1280 px wide with "Capture full size screenshot".
+  Do not use `/users` from Vercel, it shows real email addresses.
+- All the others were taken from the app running on a laptop: `next dev` with `NEXT_PUBLIC_SUPABASE_URL` and
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` set on the command line (this overrides `.env.local`) to point at a small local script that answers the
   auth and read requests the app makes, with the data of `supabase/seed.sql`. The session is a cookie the script writes, so no real account,
-  email or key appears in a picture, and nothing touches the real database. The script is a throwaway and is not in the repo.
+  email or key appears in a picture, and nothing touches the real database. The script is a throwaway and is not in the repo. Keep its data
+  consistent with what the database would do (for example a closed alarm's `updated_at` is its `closed_at`).
 - To retake one: sign in as the role in a headless browser, set `localStorage.theme` to `light` or `dark` before the page loads, and hide the
   Next.js dev badge with `nextjs-portal { display: none }`. Pick the submit button inside `main form`, because the first submit button on a page is Logout.
-- A viewer picture of an Open alarm is left out on purpose: that page tells a viewer "This alarm is closed" (the message in
-  `app/alarms/[id]/page.tsx` is shown whenever the alarm cannot be edited). Issue #56 tracks the fix; retake the picture after it is merged.
+
 
 ## Schema file (plan 11.3, `supabase/schema.sql`)
 
